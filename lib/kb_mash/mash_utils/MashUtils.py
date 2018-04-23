@@ -18,9 +18,11 @@ class MashUtils:
         self.scratch = os.path.abspath(config['scratch'])
 
     def mash_dist_runner(self, file_path, search_db):
+        output_file_name = "outfile"
         dist_search_command = ['/kb/module/mash-Linux64-v2.0/mash', 'dist', search_db,
-                               file_path, ">", "outfile"]
+                               file_path, ">", output_file_name]
         self._run_command(' '.join(dist_search_command))
+        return output_file_name
 
     def _run_command(self, command):
         """

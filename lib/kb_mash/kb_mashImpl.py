@@ -58,7 +58,8 @@ class kb_mash:
         [file_list] = kb_obj_helper.stage_assembly_files([params['input_assembly_upa']])
         print file_list
         mash_helper = MashUtils(self.config)
-        mash_helper.mash_dist_runner(file_list, self.SEARCH_DBS[params['search_db']])
+        outfile = mash_helper.mash_dist_runner(file_list, self.SEARCH_DBS[params['search_db']])
+        kb_obj_helper.report_gen(outfile)
 
         results = {'report_name': '', 'report_ref': ''}
         #END run_mash_dist_search

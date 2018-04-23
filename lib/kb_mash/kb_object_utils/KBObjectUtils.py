@@ -36,6 +36,11 @@ class KBObjectUtils:
             else:
                 raise
 
+    def report_gen(self, output_file_name):
+        with open(output_file_name, 'rb') as fh:
+            for line in fh:
+                print line
+
     def stage_assembly_files(self, object_list):
         """
         _stage_assembly_files: download the fasta files to the scratch area
