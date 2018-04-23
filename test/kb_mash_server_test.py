@@ -4,6 +4,7 @@ import os  # noqa: F401
 import json  # noqa: F401
 import time
 import requests
+import shutil
 
 from os import environ
 try:
@@ -17,7 +18,7 @@ from biokbase.workspace.client import Workspace as workspaceService
 from kb_mash.kb_mashImpl import kb_mash
 from kb_mash.kb_mashServer import MethodContext
 from kb_mash.authclient import KBaseAuth as _KBaseAuth
-
+from AssemblyUtil.AssemblyUtilClient import AssemblyUtil
 
 class kb_mashTest(unittest.TestCase):
 
@@ -47,15 +48,29 @@ class kb_mashTest(unittest.TestCase):
                         'authenticated': 1})
         cls.wsURL = cls.cfg['workspace-url']
         cls.wsClient = workspaceService(cls.wsURL)
+        suffix = int(time.time() * 1000)
+        wsName = "test_kb_sourmash_" + str(suffix)
+        cls.ws_info = cls.wsClient.create_workspace({'workspace': wsName})
         cls.serviceImpl = kb_mash(cls.cfg)
         cls.scratch = cls.cfg['scratch']
         cls.callback_url = os.environ['SDK_CALLBACK_URL']
+        cls.au = AssemblyUtil(os.environ['SDK_CALLBACK_URL'])
+        cls.setup_data()
 
     @classmethod
     def tearDownClass(cls):
         if hasattr(cls, 'wsName'):
             cls.wsClient.delete_workspace({'workspace': cls.wsName})
             print('Test workspace was deleted')
+
+    @classmethod
+    def setup_data(cls):
+        tf = 'ecoliMG1655.fa'
+        target = os.path.join(cls.scratch, tf)
+        shutil.copy('data/' + tf, target)
+        cls.ref = cls.au.save_assembly_from_fasta({'file': {'path': target},
+                                                   'workspace_name': cls.ws_info[1],
+                                                   'assembly_name': 'ecoliMG1655'})
 
     def getWsClient(self):
         return self.__class__.wsClient
@@ -87,3 +102,8 @@ class kb_mashTest(unittest.TestCase):
         # Check returned data with
         # self.assertEqual(ret[...], ...) or other unittest methods
         pass
+
+    def test_mash_search(self):
+        params = {'input_assembly_upa': self.ref, 'workspace_name': self.getWsName(),
+                  'search_db': 'Ecoli'}
+        self.getImpl().run_mash_dist_search(self.getContext(), params)
