@@ -33,6 +33,10 @@
               {
                 "value": "Genbank",
                 "display": "Genbank"
+              },
+              {
+                "value": "Ecoli",
+                "display": "Ecoli"
               }
             ]
           }

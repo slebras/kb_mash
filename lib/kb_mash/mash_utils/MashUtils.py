@@ -1,6 +1,5 @@
 import time
 import os
-import uuid
 import errno
 import subprocess
 
