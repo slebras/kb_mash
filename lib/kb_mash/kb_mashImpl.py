@@ -35,7 +35,8 @@ class kb_mash:
         self.config = config
         self.scratch = os.path.abspath(config['scratch'])
         self.callbackURL = os.environ['SDK_CALLBACK_URL']
-        self.SEARCH_DBS = {'Ecoli': '/kb/module/test/data/ecolidb.msh'}
+        self.SEARCH_DBS = {'Ecoli': '/kb/module/test/data/ecolidb.msh',
+                           'KBaseRefseq': '/data/kb_refseq_ci.msh'}
         #END_CONSTRUCTOR
         pass
 

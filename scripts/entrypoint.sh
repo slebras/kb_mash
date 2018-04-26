@@ -17,6 +17,15 @@ elif [ "${1}" = "async" ] ; then
   sh ./scripts/run_async.sh
 elif [ "${1}" = "init" ] ; then
   echo "Initialize module"
+  cd /data
+  echo "Getting databases"
+  curl -O ftp://ftp.kbase.us/sourmash_data/kb_refseq_ci.msh.gz
+  gunzip kb_refseq_ci.msh.gz
+  if [ -f kb_refseq_ci.msh ] ; then
+    touch __READY__
+  else
+    echo "init failed"
+  fi
 elif [ "${1}" = "bash" ] ; then
   bash
 elif [ "${1}" = "report" ] ; then
