@@ -2,6 +2,7 @@ import time
 import os
 import errno
 import subprocess
+import csv
 
 
 def log(message, prefix_newline=False):
@@ -19,9 +20,22 @@ class MashUtils:
     def mash_dist_runner(self, file_path, search_db):
         output_file_name = "outfile"
         dist_search_command = ['/kb/module/mash-Linux64-v2.0/mash', 'dist', search_db,
-                               file_path, ">", output_file_name]
+                               file_path, "| sort -gk3 >", output_file_name]
         self._run_command(' '.join(dist_search_command))
         return output_file_name
+
+    def parse_search_results(self, results_path, maxcount):
+        id_to_similarity = {}
+
+        with open(results_path, 'rb') as fh:
+            csvfile = csv.reader(fh, delimiter='\t')
+            count = 0
+            for line in csvfile:
+                if count >= maxcount:
+                    break
+                id_to_similarity[line[0]] = float(line[2])
+                count += 1
+        return id_to_similarity
 
     def _run_command(self, command):
         """

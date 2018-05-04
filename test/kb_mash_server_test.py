@@ -49,7 +49,7 @@ class kb_mashTest(unittest.TestCase):
         cls.wsURL = cls.cfg['workspace-url']
         cls.wsClient = workspaceService(cls.wsURL)
         suffix = int(time.time() * 1000)
-        wsName = "test_kb_sourmash_" + str(suffix)
+        wsName = "test_kb_mash_" + str(suffix)
         cls.ws_info = cls.wsClient.create_workspace({'workspace': wsName})
         cls.serviceImpl = kb_mash(cls.cfg)
         cls.scratch = cls.cfg['scratch']

@@ -60,7 +60,8 @@ class kb_mash:
         print file_list
         mash_helper = MashUtils(self.config)
         outfile = mash_helper.mash_dist_runner(file_list, self.SEARCH_DBS[params['search_db']])
-        kb_obj_helper.report_gen(outfile)
+        id_to_similarity = mash_helper.parse_search_results(outfile, 100)
+        kb_obj_helper.create_search_report(params['workspace_name'], id_to_similarity, params['search_db'])
 
         results = {'report_name': '', 'report_ref': ''}
         #END run_mash_dist_search
