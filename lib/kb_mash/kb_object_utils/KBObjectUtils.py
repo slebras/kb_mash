@@ -87,7 +87,7 @@ class KBObjectUtils:
             html_file.write('<div>Showing {} matches</div>\n'
                             .format(len(id_to_similarity)))
             html_file.write('<table>\n')
-            html_file.write('<tr><th>ID</th><th>Minhash similarity</th></tr>\n')
+            html_file.write('<tr><th>ID</th><th>Minhash distance</th></tr>\n')
             for id_, similarity in sorted(
                     id_to_similarity.items(), key=operator.itemgetter(1), reverse=False):
                 if id_ in id_to_link:
