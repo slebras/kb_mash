@@ -61,9 +61,9 @@ class kb_mash:
         mash_helper = MashUtils(self.config)
         outfile = mash_helper.mash_dist_runner(file_list, self.SEARCH_DBS[params['search_db']])
         id_to_similarity = mash_helper.parse_search_results(outfile, 100)
-        kb_obj_helper.create_search_report(params['workspace_name'], id_to_similarity, params['search_db'])
+        report = kb_obj_helper.create_search_report(params['workspace_name'], id_to_similarity, params['search_db'])
 
-        results = {'report_name': '', 'report_ref': ''}
+        results = {'report_name': report['name'], 'report_ref': report['ref']}
         #END run_mash_dist_search
 
         # At some point might do deeper type checking...

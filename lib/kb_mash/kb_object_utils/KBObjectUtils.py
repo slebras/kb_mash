@@ -109,7 +109,7 @@ class KBObjectUtils:
         self._write_search_results(
             os.path.join(outdir, 'index.html'), id_to_similarity, id_to_link)
 
-        log('Saving Sourmash search report')
+        log('Saving Mash search report')
 
         dfu = _DFUClient(self.callbackURL)
         try:
