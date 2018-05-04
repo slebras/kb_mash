@@ -48,14 +48,14 @@ class kb_mashTest(unittest.TestCase):
                         'authenticated': 1})
         cls.wsURL = cls.cfg['workspace-url']
         cls.wsClient = workspaceService(cls.wsURL)
-        suffix = int(time.time() * 1000)
-        wsName = "test_kb_mash_" + str(suffix)
-        cls.ws_info = cls.wsClient.create_workspace({'workspace': wsName})
+        #suffix = int(time.time() * 1000)
+        #wsName = "test_kb_mash_" + str(suffix)
+        #cls.ws_info = cls.wsClient.create_workspace({'workspace': wsName})
         cls.serviceImpl = kb_mash(cls.cfg)
         cls.scratch = cls.cfg['scratch']
         cls.callback_url = os.environ['SDK_CALLBACK_URL']
-        cls.au = AssemblyUtil(os.environ['SDK_CALLBACK_URL'])
-        cls.setup_data()
+        #cls.au = AssemblyUtil(os.environ['SDK_CALLBACK_URL'])
+        #cls.setup_data()
 
     @classmethod
     def tearDownClass(cls):
@@ -63,14 +63,17 @@ class kb_mashTest(unittest.TestCase):
             cls.wsClient.delete_workspace({'workspace': cls.wsName})
             print('Test workspace was deleted')
 
-    @classmethod
-    def setup_data(cls):
+    def get_genome_ref(self):
+        if hasattr(self.__class__, 'genomeInfo'):
+            return self.__class__.genomeInfo
+        au = AssemblyUtil(os.environ['SDK_CALLBACK_URL'])
         tf = 'ecoliMG1655.fa'
-        target = os.path.join(cls.scratch, tf)
+        target = os.path.join(self.scratch, tf)
         shutil.copy('data/' + tf, target)
-        cls.ref = cls.au.save_assembly_from_fasta({'file': {'path': target},
-                                                   'workspace_name': cls.ws_info[1],
+        self.__class__.genomeInfo = au.save_assembly_from_fasta({'file': {'path': target},
+                                                   'workspace_name': self.getWsName(),
                                                    'assembly_name': 'ecoliMG1655'})
+        return self.__class__.genomeInfo
 
     def getWsClient(self):
         return self.__class__.wsClient
@@ -104,6 +107,6 @@ class kb_mashTest(unittest.TestCase):
         pass
 
     def test_mash_search(self):
-        params = {'input_assembly_upa': self.ref, 'workspace_name': self.getWsName(),
-                  'search_db': 'Ecoli'}
+        params = {'input_assembly_upa': self.get_genome_ref(), 'workspace_name': self.getWsName(),
+                  'search_db': 'KBaseRefseq'}
         self.getImpl().run_mash_dist_search(self.getContext(), params)

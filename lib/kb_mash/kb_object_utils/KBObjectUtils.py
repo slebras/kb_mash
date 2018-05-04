@@ -76,6 +76,9 @@ class KBObjectUtils:
                               'link': '/#dataview/' + id_.replace('_', '/')}
         return idmap
 
+    def _to_upa(self, objinfo, sep='/'):
+        return str(objinfo[6]) + sep + str(objinfo[0]) + sep + str(objinfo[4])
+
     def _write_search_results(self, outfile, id_to_similarity, id_to_link):
         # change to mustache or something later. Or just rewrite this whole thing since this is
         # a demo
