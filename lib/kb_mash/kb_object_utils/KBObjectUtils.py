@@ -28,6 +28,7 @@ class KBObjectUtils:
         self.tmp = os.path.join(self.scratch, str(uuid.uuid4()))
         self._mkdir_p(self.tmp)
         self.callbackURL = os.environ['SDK_CALLBACK_URL']
+        self.ws_url = config['workspace-url']
 
     def _mkdir_p(self, path):
         """
