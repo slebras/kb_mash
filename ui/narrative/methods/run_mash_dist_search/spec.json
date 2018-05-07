@@ -12,7 +12,7 @@
     "parameters": [
         {
             "id": "input_assembly_upa",
-            "optional": true,
+            "optional": false,
             "advanced": false,
             "allow_multiple": false,
             "default_values": [ "" ],
@@ -26,7 +26,7 @@
             "optional": false,
             "advanced": false,
             "allow_multiple": false,
-            "default_values": [ "Ecoli" ],
+            "default_values": [ "KBaseRefseq" ],
             "field_type": "dropdown",
             "dropdown_options":{
             "options": [
@@ -44,6 +44,17 @@
               }
             ]
           }
+        },
+        {
+            "id": "max_hits",
+            "optional": false,
+            "advanced": false,
+            "allow_multiple": false,
+            "default_values": [ 100 ],
+            "field_type": "text",
+            "text_options": {
+                "validate_as": "int"
+            }
         }
     ],
     "behavior": {
@@ -64,6 +75,10 @@
                 {
                   "input_parameter": "search_db",
                   "target_property": "search_db"
+                },
+                {
+                  "input_parameter": "max_hits",
+                  "target_property": "max_hits"
                 }
             ],
             "output_mapping": [

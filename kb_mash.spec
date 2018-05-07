@@ -12,6 +12,7 @@ module kb_mash {
         string input_assembly_upa;
         string workspace_name;
         string search_db;
+        int max_hits;
     } MashParams;
 
     typedef structure {

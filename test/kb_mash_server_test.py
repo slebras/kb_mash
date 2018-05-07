@@ -108,5 +108,5 @@ class kb_mashTest(unittest.TestCase):
 
     def test_mash_search(self):
         params = {'input_assembly_upa': self.get_genome_ref(), 'workspace_name': self.getWsName(),
-                  'search_db': 'KBaseRefseq'}
+                  'search_db': 'KBaseRefseq', 'max_hits': 100}
         self.getImpl().run_mash_dist_search(self.getContext(), params)
