@@ -221,6 +221,8 @@ $params is a kb_mash.MashSketchParams
 $results is a kb_mash.MashSketchResults
 MashSketchParams is a reference to a hash where the following keys are defined:
 	fasta_path has a value which is a string
+	assembly_ref has a value which is a string
+	reads_ref has a value which is a string
 MashSketchResults is a reference to a hash where the following keys are defined:
 	sketch_path has a value which is a string
 
@@ -234,6 +236,8 @@ $params is a kb_mash.MashSketchParams
 $results is a kb_mash.MashSketchResults
 MashSketchParams is a reference to a hash where the following keys are defined:
 	fasta_path has a value which is a string
+	assembly_ref has a value which is a string
+	reads_ref has a value which is a string
 MashSketchResults is a reference to a hash where the following keys are defined:
 	sketch_path has a value which is a string
 
@@ -242,7 +246,7 @@ MashSketchResults is a reference to a hash where the following keys are defined:
 
 =item Description
 
-
+Generate a sketch file from a fasta/fastq file
 
 =back
 
@@ -462,6 +466,15 @@ report_ref has a value which is a string
 
 
 
+=item Description
+
+*
+* Pass in **one of** fasta_path, assembly_ref, or reads_ref
+*   fasta_path - string - local file path to an input fasta/fastq
+*   assembly_ref - string - workspace reference to an Assembly type
+*   reads_ref - string - workspace reference to a Reads type
+
+
 =item Definition
 
 =begin html
@@ -469,6 +482,8 @@ report_ref has a value which is a string
 <pre>
 a reference to a hash where the following keys are defined:
 fasta_path has a value which is a string
+assembly_ref has a value which is a string
+reads_ref has a value which is a string
 
 </pre>
 
@@ -478,6 +493,8 @@ fasta_path has a value which is a string
 
 a reference to a hash where the following keys are defined:
 fasta_path has a value which is a string
+assembly_ref has a value which is a string
+reads_ref has a value which is a string
 
 
 =end text
@@ -490,6 +507,13 @@ fasta_path has a value which is a string
 
 =over 4
 
+
+
+=item Description
+
+*
+* Returns the local scratch file path of the generated sketch file.
+* Will have the extension '.msh'
 
 
 =item Definition

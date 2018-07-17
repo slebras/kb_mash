@@ -48,10 +48,17 @@ class kb_mash(object):
 
     def run_mash_sketch(self, params, context=None):
         """
-        :param params: instance of type "MashSketchParams" -> structure:
-           parameter "fasta_path" of String
-        :returns: instance of type "MashSketchResults" -> structure:
-           parameter "sketch_path" of String
+        Generate a sketch file from a fasta/fastq file
+        :param params: instance of type "MashSketchParams" (* * Pass in **one
+           of** fasta_path, assembly_ref, or reads_ref *   fasta_path -
+           string - local file path to an input fasta/fastq *   assembly_ref
+           - string - workspace reference to an Assembly type *   reads_ref -
+           string - workspace reference to a Reads type) -> structure:
+           parameter "fasta_path" of String, parameter "assembly_ref" of
+           String, parameter "reads_ref" of String
+        :returns: instance of type "MashSketchResults" (* * Returns the local
+           scratch file path of the generated sketch file. * Will have the
+           extension '.msh') -> structure: parameter "sketch_path" of String
         """
         return self._client.call_method(
             'kb_mash.run_mash_sketch',

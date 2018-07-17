@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 #BEGIN_HEADER
 import os
+from AssemblyUtil.AssemblyUtilClient import AssemblyUtil
+from ReadsUtils.ReadsUtilsClient import ReadsUtils
 from kb_mash.kb_object_utils.KBObjectUtils import KBObjectUtils
 from kb_mash.mash_utils.MashUtils import MashUtils
 #END_HEADER
@@ -23,7 +25,7 @@ class kb_mash:
     ######################################### noqa
     VERSION = "0.0.1"
     GIT_URL = ""
-    GIT_COMMIT_HASH = "a7f618e7aefaf545f91b078f142e0583d2f9a3b8"
+    GIT_COMMIT_HASH = "98e34b800d89d422fba3ee65a2be3c058acc199e"
 
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
@@ -77,17 +79,43 @@ class kb_mash:
 
     def run_mash_sketch(self, ctx, params):
         """
-        :param params: instance of type "MashSketchParams" -> structure:
-           parameter "fasta_path" of String
-        :returns: instance of type "MashSketchResults" -> structure:
-           parameter "sketch_path" of String
+        Generate a sketch file from a fasta/fastq file
+        :param params: instance of type "MashSketchParams" (* * Pass in **one
+           of** fasta_path, assembly_ref, or reads_ref *   fasta_path -
+           string - local file path to an input fasta/fastq *   assembly_ref
+           - string - workspace reference to an Assembly type *   reads_ref -
+           string - workspace reference to a Reads type) -> structure:
+           parameter "fasta_path" of String, parameter "assembly_ref" of
+           String, parameter "reads_ref" of String
+        :returns: instance of type "MashSketchResults" (* * Returns the local
+           scratch file path of the generated sketch file. * Will have the
+           extension '.msh') -> structure: parameter "sketch_path" of String
         """
         # ctx is the context object
         # return variables are: results
         #BEGIN run_mash_sketch
-        assert params.get('fasta_path'), 'must provide a path to a fasta file'
+        if 'reads_ref' in params:
+            reads_utils = ReadsUtils(self.config)
+            result = reads_utils.download_reads({
+                'read_libraries': [params['reads_ref']]
+            })
+            print(result)
+            reads_file = result['files'][params['reads_ref']]['files']
+            print(reads_file, '!')
+            fasta_path = 'nonexistent!'
+            # TODO concat all the reads files?
+        if 'assembly_ref' in params:
+            assembly_util = AssemblyUtil(self.callbackURL)
+            result = assembly_util.get_assembly_as_fasta({'ref': params['assembly_ref']})
+            fasta_path = result['path']
+        elif 'fasta_path' in params:
+            fasta_path = params['fasta_path']
+        else:
+            raise ValueError(
+                'Invalid params. Must provide either `ws_ref` (workspace reference) or `fasta_path`'
+            )
         mash_utils = MashUtils(self.config)
-        output_file_path = mash_utils.mash_sketch(params['fasta_path'])
+        output_file_path = mash_utils.mash_sketch(fasta_path)
         results = {'sketch_path': output_file_path}
         #END run_mash_sketch
 

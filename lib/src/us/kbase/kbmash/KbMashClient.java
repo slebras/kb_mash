@@ -182,6 +182,8 @@ public class KbMashClient {
     /**
      * <p>Original spec-file function name: run_mash_sketch</p>
      * <pre>
+     * *
+     * * Generate a sketch file from a fasta/fastq file
      * </pre>
      * @param   params   instance of type {@link us.kbase.kbmash.MashSketchParams MashSketchParams}
      * @return   parameter "results" of type {@link us.kbase.kbmash.MashSketchResults MashSketchResults}

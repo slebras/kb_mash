@@ -69,6 +69,7 @@ class kb_mashTest(unittest.TestCase):
         au = AssemblyUtil(os.environ['SDK_CALLBACK_URL'])
         tf = 'ecoliMG1655.fa'
         target = os.path.join(self.scratch, tf)
+        self.genome_path = target
         shutil.copy('data/' + tf, target)
         self.__class__.genomeInfo = au.save_assembly_from_fasta({'file': {'path': target},
                                                    'workspace_name': self.getWsName(),
@@ -107,13 +108,12 @@ class kb_mashTest(unittest.TestCase):
         # self.assertEqual(ret[...], ...) or other unittest methods
         pass
 
-    @unittest.skip('skip')
     def test_mash_search(self):
         params = {'input_assembly_upa': self.get_genome_ref(), 'workspace_name': self.getWsName(),
                   'search_db': 'KBaseRefseq', 'max_hits': 100}
         self.getImpl().run_mash_dist_search(self.getContext(), params)
 
-    def test_mash_sketch_valid(self):
+    def test_mash_sketch_valid_local(self):
         dir_path = os.path.dirname(os.path.realpath(__file__))
         params = {'fasta_path': os.path.join(dir_path, 'data', 'ecoliMG1655.fa')}
         self.getImpl().run_mash_sketch(self.getContext(), params)
@@ -122,3 +122,26 @@ class kb_mashTest(unittest.TestCase):
             num_lines = sum(1 for line in output_file)
         self.assertTrue(os.path.exists(output_path))
         self.assertEqual(num_lines, 103)
+
+    def test_mash_sketch_valid_assembly_ref(self):
+        assembly_ref = self.get_genome_ref()
+        params = {'assembly_ref': assembly_ref}
+        self.getImpl().run_mash_sketch(self.getContext(), params)
+        output_path = os.path.join(self.scratch, 'ecoliMG1655.fa.msh')
+        with open(output_path, 'rb') as output_file:
+            num_lines = sum(1 for line in output_file)
+        self.assertTrue(os.path.exists(output_path))
+        self.assertEqual(num_lines, 103)
+
+    @unittest.skip('TODO')
+    def test_mash_sketch_valid_reads_ref(self):
+        assembly_ref = self.get_genome_ref()
+        # dir_path = os.path.dirname(os.path.realpath(__file__))
+        params = {'assembly_ref': assembly_ref}
+        self.getImpl().run_mash_sketch(self.getContext(), params)
+        # # Need to check for the output in scratch
+        # output_path = os.path.join(dir_path, 'data', 'ecoliMG1655.fa.msh')
+        # with open(output_path, 'rb') as output_file:
+        #     num_lines = sum(1 for line in output_file)
+        # self.assertTrue(os.path.exists(output_path))
+        # self.assertEqual(num_lines, 103)

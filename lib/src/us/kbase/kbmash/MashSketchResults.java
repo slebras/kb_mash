@@ -13,7 +13,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * <p>Original spec-file type: MashSketchResults</p>
- * 
+ * <pre>
+ * *
+ * * Returns the local scratch file path of the generated sketch file.
+ * * Will have the extension '.msh'
+ * </pre>
  * 
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)

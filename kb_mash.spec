@@ -24,14 +24,29 @@ module kb_mash {
         returns(MashResults results) authentication required;
 
 
+    /**
+     * Pass in **one of** fasta_path, assembly_ref, or reads_ref
+     *   fasta_path - string - local file path to an input fasta/fastq
+     *   assembly_ref - string - workspace reference to an Assembly type
+     *   reads_ref - string - workspace reference to a Reads type
+     */
     typedef structure {
         string fasta_path;
+        string assembly_ref;
+        string reads_ref;
     } MashSketchParams;
 
+    /**
+     * Returns the local scratch file path of the generated sketch file.
+     * Will have the extension '.msh'
+     */
     typedef structure {
         string sketch_path;
     } MashSketchResults;
 
+    /**
+     * Generate a sketch file from a fasta/fastq file
+     */
     funcdef run_mash_sketch(MashSketchParams params)
         returns(MashSketchResults results) authentication required;
 };
