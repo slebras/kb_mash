@@ -22,8 +22,8 @@ class kb_mash:
     # the latter method is running.
     ######################################### noqa
     VERSION = "0.0.1"
-    GIT_URL = "https://github.com/psdehal/kb_mash.git"
-    GIT_COMMIT_HASH = "d79e00da6706b9d8c4f1b04800ca8f91283da71b"
+    GIT_URL = ""
+    GIT_COMMIT_HASH = "5a543c55920738e64d4cce788e09a0197ea54e48"
 
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
@@ -46,7 +46,7 @@ class kb_mash:
         :param params: instance of type "MashParams" (Insert your typespec
            information here.) -> structure: parameter "input_assembly_upa" of
            String, parameter "workspace_name" of String, parameter
-           "search_db" of String
+           "search_db" of String, parameter "max_hits" of Long
         :returns: instance of type "MashResults" -> structure: parameter
            "report_name" of String, parameter "report_ref" of String
         """
@@ -71,6 +71,26 @@ class kb_mash:
         # At some point might do deeper type checking...
         if not isinstance(results, dict):
             raise ValueError('Method run_mash_dist_search return value ' +
+                             'results is not type dict as required.')
+        # return the results
+        return [results]
+
+    def run_mash_sketch(self, ctx, MashSketchParams):
+        """
+        :param MashSketchParams: instance of type "MashSketchParams" ->
+           structure: parameter "workspace_name" of String, parameter
+           "input_fasta_ref" of String
+        :returns: instance of type "MashSketchResults" -> structure:
+           parameter "output_file_path" of String
+        """
+        # ctx is the context object
+        # return variables are: results
+        #BEGIN run_mash_sketch
+        #END run_mash_sketch
+
+        # At some point might do deeper type checking...
+        if not isinstance(results, dict):
+            raise ValueError('Method run_mash_sketch return value ' +
                              'results is not type dict as required.')
         # return the results
         return [results]

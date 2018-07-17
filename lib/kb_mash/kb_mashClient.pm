@@ -125,6 +125,7 @@ MashParams is a reference to a hash where the following keys are defined:
 	input_assembly_upa has a value which is a string
 	workspace_name has a value which is a string
 	search_db has a value which is a string
+	max_hits has a value which is an int
 MashResults is a reference to a hash where the following keys are defined:
 	report_name has a value which is a string
 	report_ref has a value which is a string
@@ -141,6 +142,7 @@ MashParams is a reference to a hash where the following keys are defined:
 	input_assembly_upa has a value which is a string
 	workspace_name has a value which is a string
 	search_db has a value which is a string
+	max_hits has a value which is an int
 MashResults is a reference to a hash where the following keys are defined:
 	report_name has a value which is a string
 	report_ref has a value which is a string
@@ -202,6 +204,98 @@ MashResults is a reference to a hash where the following keys are defined:
     }
 }
  
+
+
+=head2 run_mash_sketch
+
+  $results = $obj->run_mash_sketch($MashSketchParams)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$MashSketchParams is a kb_mash.MashSketchParams
+$results is a kb_mash.MashSketchResults
+MashSketchParams is a reference to a hash where the following keys are defined:
+	workspace_name has a value which is a string
+	input_fasta_ref has a value which is a string
+MashSketchResults is a reference to a hash where the following keys are defined:
+	output_file_path has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+$MashSketchParams is a kb_mash.MashSketchParams
+$results is a kb_mash.MashSketchResults
+MashSketchParams is a reference to a hash where the following keys are defined:
+	workspace_name has a value which is a string
+	input_fasta_ref has a value which is a string
+MashSketchResults is a reference to a hash where the following keys are defined:
+	output_file_path has a value which is a string
+
+
+=end text
+
+=item Description
+
+
+
+=back
+
+=cut
+
+ sub run_mash_sketch
+{
+    my($self, @args) = @_;
+
+# Authentication: required
+
+    if ((my $n = @args) != 1)
+    {
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
+							       "Invalid argument count for function run_mash_sketch (received $n, expecting 1)");
+    }
+    {
+	my($MashSketchParams) = @args;
+
+	my @_bad_arguments;
+        (ref($MashSketchParams) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"MashSketchParams\" (value was \"$MashSketchParams\")");
+        if (@_bad_arguments) {
+	    my $msg = "Invalid arguments passed to run_mash_sketch:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+								   method_name => 'run_mash_sketch');
+	}
+    }
+
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "kb_mash.run_mash_sketch",
+	    params => \@args,
+    });
+    if ($result) {
+	if ($result->is_error) {
+	    Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
+					       code => $result->content->{error}->{code},
+					       method_name => 'run_mash_sketch',
+					       data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
+					      );
+	} else {
+	    return wantarray ? @{$result->result} : $result->result->[0];
+	}
+    } else {
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method run_mash_sketch",
+					    status_line => $self->{client}->status_line,
+					    method_name => 'run_mash_sketch',
+				       );
+    }
+}
+ 
   
 sub status
 {
@@ -245,16 +339,16 @@ sub version {
             Bio::KBase::Exceptions::JSONRPC->throw(
                 error => $result->error_message,
                 code => $result->content->{code},
-                method_name => 'run_mash_dist_search',
+                method_name => 'run_mash_sketch',
             );
         } else {
             return wantarray ? @{$result->result} : $result->result->[0];
         }
     } else {
         Bio::KBase::Exceptions::HTTP->throw(
-            error => "Error invoking method run_mash_dist_search",
+            error => "Error invoking method run_mash_sketch",
             status_line => $self->{client}->status_line,
-            method_name => 'run_mash_dist_search',
+            method_name => 'run_mash_sketch',
         );
     }
 }
@@ -311,6 +405,7 @@ a reference to a hash where the following keys are defined:
 input_assembly_upa has a value which is a string
 workspace_name has a value which is a string
 search_db has a value which is a string
+max_hits has a value which is an int
 
 </pre>
 
@@ -322,6 +417,7 @@ a reference to a hash where the following keys are defined:
 input_assembly_upa has a value which is a string
 workspace_name has a value which is a string
 search_db has a value which is a string
+max_hits has a value which is an int
 
 
 =end text
@@ -354,6 +450,68 @@ report_ref has a value which is a string
 a reference to a hash where the following keys are defined:
 report_name has a value which is a string
 report_ref has a value which is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 MashSketchParams
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+workspace_name has a value which is a string
+input_fasta_ref has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+workspace_name has a value which is a string
+input_fasta_ref has a value which is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 MashSketchResults
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+output_file_path has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+output_file_path has a value which is a string
 
 
 =end text

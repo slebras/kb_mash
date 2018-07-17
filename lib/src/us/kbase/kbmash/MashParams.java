@@ -23,7 +23,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({
     "input_assembly_upa",
     "workspace_name",
-    "search_db"
+    "search_db",
+    "max_hits"
 })
 public class MashParams {
 
@@ -33,6 +34,8 @@ public class MashParams {
     private String workspaceName;
     @JsonProperty("search_db")
     private String searchDb;
+    @JsonProperty("max_hits")
+    private Long maxHits;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("input_assembly_upa")
@@ -80,6 +83,21 @@ public class MashParams {
         return this;
     }
 
+    @JsonProperty("max_hits")
+    public Long getMaxHits() {
+        return maxHits;
+    }
+
+    @JsonProperty("max_hits")
+    public void setMaxHits(Long maxHits) {
+        this.maxHits = maxHits;
+    }
+
+    public MashParams withMaxHits(Long maxHits) {
+        this.maxHits = maxHits;
+        return this;
+    }
+
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
@@ -92,7 +110,7 @@ public class MashParams {
 
     @Override
     public String toString() {
-        return ((((((((("MashParams"+" [inputAssemblyUpa=")+ inputAssemblyUpa)+", workspaceName=")+ workspaceName)+", searchDb=")+ searchDb)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((((("MashParams"+" [inputAssemblyUpa=")+ inputAssemblyUpa)+", workspaceName=")+ workspaceName)+", searchDb=")+ searchDb)+", maxHits=")+ maxHits)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

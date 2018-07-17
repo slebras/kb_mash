@@ -337,6 +337,10 @@ class Application(object):
                              name='kb_mash.run_mash_dist_search',
                              types=[dict])
         self.method_authentication['kb_mash.run_mash_dist_search'] = 'required'  # noqa
+        self.rpc_service.add(impl_kb_mash.run_mash_sketch,
+                             name='kb_mash.run_mash_sketch',
+                             types=[dict])
+        self.method_authentication['kb_mash.run_mash_sketch'] = 'required'  # noqa
         self.rpc_service.add(impl_kb_mash.status,
                              name='kb_mash.status',
                              types=[dict])

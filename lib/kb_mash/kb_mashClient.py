@@ -38,13 +38,25 @@ class kb_mash(object):
         :param params: instance of type "MashParams" (Insert your typespec
            information here.) -> structure: parameter "input_assembly_upa" of
            String, parameter "workspace_name" of String, parameter
-           "search_db" of String
+           "search_db" of String, parameter "max_hits" of Long
         :returns: instance of type "MashResults" -> structure: parameter
            "report_name" of String, parameter "report_ref" of String
         """
         return self._client.call_method(
             'kb_mash.run_mash_dist_search',
             [params], self._service_ver, context)
+
+    def run_mash_sketch(self, MashSketchParams, context=None):
+        """
+        :param MashSketchParams: instance of type "MashSketchParams" ->
+           structure: parameter "workspace_name" of String, parameter
+           "input_fasta_ref" of String
+        :returns: instance of type "MashSketchResults" -> structure:
+           parameter "output_file_path" of String
+        """
+        return self._client.call_method(
+            'kb_mash.run_mash_sketch',
+            [MashSketchParams], self._service_ver, context)
 
     def status(self, context=None):
         return self._client.call_method('kb_mash.status',
