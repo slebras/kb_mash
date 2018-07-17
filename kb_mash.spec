@@ -22,4 +22,17 @@ module kb_mash {
 
     funcdef run_mash_dist_search(MashParams params)
         returns(MashResults results) authentication required;
+
+
+    typedef structure {
+        string workspace_name;
+        string input_fasta_ref;
+    } MashSketchParams;
+
+    typedef structure {
+        string output_file_path;
+    } MashSketchResults;
+
+    funcdef run_mash_sketch(MashSketchParams)
+        returns(MashSketchResults results) authentication required;
 };
