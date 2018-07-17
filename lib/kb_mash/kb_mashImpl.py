@@ -23,7 +23,7 @@ class kb_mash:
     ######################################### noqa
     VERSION = "0.0.1"
     GIT_URL = ""
-    GIT_COMMIT_HASH = "5a543c55920738e64d4cce788e09a0197ea54e48"
+    GIT_COMMIT_HASH = "a7f618e7aefaf545f91b078f142e0583d2f9a3b8"
 
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
@@ -59,7 +59,7 @@ class kb_mash:
         os.chdir(self.scratch)
         kb_obj_helper = KBObjectUtils(self.config)
         [file_list] = kb_obj_helper.stage_assembly_files([params['input_assembly_upa']])
-        print file_list
+        print(file_list)
         mash_helper = MashUtils(self.config)
         outfile = mash_helper.mash_dist_runner(file_list, self.SEARCH_DBS[params['search_db']])
         id_to_similarity = mash_helper.parse_search_results(outfile, params['max_hits'])
@@ -75,17 +75,20 @@ class kb_mash:
         # return the results
         return [results]
 
-    def run_mash_sketch(self, ctx, MashSketchParams):
+    def run_mash_sketch(self, ctx, params):
         """
-        :param MashSketchParams: instance of type "MashSketchParams" ->
-           structure: parameter "workspace_name" of String, parameter
-           "input_fasta_ref" of String
+        :param params: instance of type "MashSketchParams" -> structure:
+           parameter "fasta_path" of String
         :returns: instance of type "MashSketchResults" -> structure:
-           parameter "output_file_path" of String
+           parameter "sketch_path" of String
         """
         # ctx is the context object
         # return variables are: results
         #BEGIN run_mash_sketch
+        assert params.get('fasta_path'), 'must provide a path to a fasta file'
+        mash_utils = MashUtils(self.config)
+        output_file_path = mash_utils.mash_sketch(params['fasta_path'])
+        results = {'sketch_path': output_file_path}
         #END run_mash_sketch
 
         # At some point might do deeper type checking...

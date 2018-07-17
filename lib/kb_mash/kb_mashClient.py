@@ -46,17 +46,16 @@ class kb_mash(object):
             'kb_mash.run_mash_dist_search',
             [params], self._service_ver, context)
 
-    def run_mash_sketch(self, MashSketchParams, context=None):
+    def run_mash_sketch(self, params, context=None):
         """
-        :param MashSketchParams: instance of type "MashSketchParams" ->
-           structure: parameter "workspace_name" of String, parameter
-           "input_fasta_ref" of String
+        :param params: instance of type "MashSketchParams" -> structure:
+           parameter "fasta_path" of String
         :returns: instance of type "MashSketchResults" -> structure:
-           parameter "output_file_path" of String
+           parameter "sketch_path" of String
         """
         return self._client.call_method(
             'kb_mash.run_mash_sketch',
-            [MashSketchParams], self._service_ver, context)
+            [params], self._service_ver, context)
 
     def status(self, context=None):
         return self._client.call_method('kb_mash.status',

@@ -19,26 +19,26 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("com.googlecode.jsonschema2pojo")
 @JsonPropertyOrder({
-    "output_file_path"
+    "sketch_path"
 })
 public class MashSketchResults {
 
-    @JsonProperty("output_file_path")
-    private String outputFilePath;
+    @JsonProperty("sketch_path")
+    private String sketchPath;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("output_file_path")
-    public String getOutputFilePath() {
-        return outputFilePath;
+    @JsonProperty("sketch_path")
+    public String getSketchPath() {
+        return sketchPath;
     }
 
-    @JsonProperty("output_file_path")
-    public void setOutputFilePath(String outputFilePath) {
-        this.outputFilePath = outputFilePath;
+    @JsonProperty("sketch_path")
+    public void setSketchPath(String sketchPath) {
+        this.sketchPath = sketchPath;
     }
 
-    public MashSketchResults withOutputFilePath(String outputFilePath) {
-        this.outputFilePath = outputFilePath;
+    public MashSketchResults withSketchPath(String sketchPath) {
+        this.sketchPath = sketchPath;
         return this;
     }
 
@@ -54,7 +54,7 @@ public class MashSketchResults {
 
     @Override
     public String toString() {
-        return ((((("MashSketchResults"+" [outputFilePath=")+ outputFilePath)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((("MashSketchResults"+" [sketchPath=")+ sketchPath)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

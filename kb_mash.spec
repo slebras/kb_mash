@@ -25,14 +25,13 @@ module kb_mash {
 
 
     typedef structure {
-        string workspace_name;
-        string input_fasta_ref;
+        string fasta_path;
     } MashSketchParams;
 
     typedef structure {
-        string output_file_path;
+        string sketch_path;
     } MashSketchResults;
 
-    funcdef run_mash_sketch(MashSketchParams)
+    funcdef run_mash_sketch(MashSketchParams params)
         returns(MashSketchResults results) authentication required;
 };

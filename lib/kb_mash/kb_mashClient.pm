@@ -208,7 +208,7 @@ MashResults is a reference to a hash where the following keys are defined:
 
 =head2 run_mash_sketch
 
-  $results = $obj->run_mash_sketch($MashSketchParams)
+  $results = $obj->run_mash_sketch($params)
 
 =over 4
 
@@ -217,13 +217,12 @@ MashResults is a reference to a hash where the following keys are defined:
 =begin html
 
 <pre>
-$MashSketchParams is a kb_mash.MashSketchParams
+$params is a kb_mash.MashSketchParams
 $results is a kb_mash.MashSketchResults
 MashSketchParams is a reference to a hash where the following keys are defined:
-	workspace_name has a value which is a string
-	input_fasta_ref has a value which is a string
+	fasta_path has a value which is a string
 MashSketchResults is a reference to a hash where the following keys are defined:
-	output_file_path has a value which is a string
+	sketch_path has a value which is a string
 
 </pre>
 
@@ -231,13 +230,12 @@ MashSketchResults is a reference to a hash where the following keys are defined:
 
 =begin text
 
-$MashSketchParams is a kb_mash.MashSketchParams
+$params is a kb_mash.MashSketchParams
 $results is a kb_mash.MashSketchResults
 MashSketchParams is a reference to a hash where the following keys are defined:
-	workspace_name has a value which is a string
-	input_fasta_ref has a value which is a string
+	fasta_path has a value which is a string
 MashSketchResults is a reference to a hash where the following keys are defined:
-	output_file_path has a value which is a string
+	sketch_path has a value which is a string
 
 
 =end text
@@ -262,10 +260,10 @@ MashSketchResults is a reference to a hash where the following keys are defined:
 							       "Invalid argument count for function run_mash_sketch (received $n, expecting 1)");
     }
     {
-	my($MashSketchParams) = @args;
+	my($params) = @args;
 
 	my @_bad_arguments;
-        (ref($MashSketchParams) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"MashSketchParams\" (value was \"$MashSketchParams\")");
+        (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"params\" (value was \"$params\")");
         if (@_bad_arguments) {
 	    my $msg = "Invalid arguments passed to run_mash_sketch:\n" . join("", map { "\t$_\n" } @_bad_arguments);
 	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
@@ -470,8 +468,7 @@ report_ref has a value which is a string
 
 <pre>
 a reference to a hash where the following keys are defined:
-workspace_name has a value which is a string
-input_fasta_ref has a value which is a string
+fasta_path has a value which is a string
 
 </pre>
 
@@ -480,8 +477,7 @@ input_fasta_ref has a value which is a string
 =begin text
 
 a reference to a hash where the following keys are defined:
-workspace_name has a value which is a string
-input_fasta_ref has a value which is a string
+fasta_path has a value which is a string
 
 
 =end text
@@ -502,7 +498,7 @@ input_fasta_ref has a value which is a string
 
 <pre>
 a reference to a hash where the following keys are defined:
-output_file_path has a value which is a string
+sketch_path has a value which is a string
 
 </pre>
 
@@ -511,7 +507,7 @@ output_file_path has a value which is a string
 =begin text
 
 a reference to a hash where the following keys are defined:
-output_file_path has a value which is a string
+sketch_path has a value which is a string
 
 
 =end text

@@ -12,10 +12,25 @@ def log(message, prefix_newline=False):
     print(('\n' if prefix_newline else '') + '{0:.2f}'.format(time.time()) + ': ' + str(message))
 
 
+mash_bin = '/kb/module/mash-Linux64-v2.0/mash'
+
+
 class MashUtils:
 
     def __init__(self, config):
         self.scratch = os.path.abspath(config['scratch'])
+
+    def mash_sketch(self, genome_file_path):
+        """
+        Generate a sketch file for a given fasta file path, saving the output to a tempfile.
+
+        Documentation: http://mash.readthedocs.io/en/latest/tutorials.html
+        """
+        assert os.path.exists(genome_file_path), 'genome_file_path must exist'
+        output_path = genome_file_path + '.msh'
+        args = [mash_bin, 'sketch', genome_file_path, '-o', output_path]
+        self._run_command(' '.join(args))
+        return output_path
 
     def mash_dist_runner(self, file_path, search_db):
         output_file_name = "outfile"

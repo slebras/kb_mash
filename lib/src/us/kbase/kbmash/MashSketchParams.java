@@ -19,44 +19,26 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("com.googlecode.jsonschema2pojo")
 @JsonPropertyOrder({
-    "workspace_name",
-    "input_fasta_ref"
+    "fasta_path"
 })
 public class MashSketchParams {
 
-    @JsonProperty("workspace_name")
-    private String workspaceName;
-    @JsonProperty("input_fasta_ref")
-    private String inputFastaRef;
+    @JsonProperty("fasta_path")
+    private String fastaPath;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("workspace_name")
-    public String getWorkspaceName() {
-        return workspaceName;
+    @JsonProperty("fasta_path")
+    public String getFastaPath() {
+        return fastaPath;
     }
 
-    @JsonProperty("workspace_name")
-    public void setWorkspaceName(String workspaceName) {
-        this.workspaceName = workspaceName;
+    @JsonProperty("fasta_path")
+    public void setFastaPath(String fastaPath) {
+        this.fastaPath = fastaPath;
     }
 
-    public MashSketchParams withWorkspaceName(String workspaceName) {
-        this.workspaceName = workspaceName;
-        return this;
-    }
-
-    @JsonProperty("input_fasta_ref")
-    public String getInputFastaRef() {
-        return inputFastaRef;
-    }
-
-    @JsonProperty("input_fasta_ref")
-    public void setInputFastaRef(String inputFastaRef) {
-        this.inputFastaRef = inputFastaRef;
-    }
-
-    public MashSketchParams withInputFastaRef(String inputFastaRef) {
-        this.inputFastaRef = inputFastaRef;
+    public MashSketchParams withFastaPath(String fastaPath) {
+        this.fastaPath = fastaPath;
         return this;
     }
 
@@ -72,7 +54,7 @@ public class MashSketchParams {
 
     @Override
     public String toString() {
-        return ((((((("MashSketchParams"+" [workspaceName=")+ workspaceName)+", inputFastaRef=")+ inputFastaRef)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((("MashSketchParams"+" [fastaPath=")+ fastaPath)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

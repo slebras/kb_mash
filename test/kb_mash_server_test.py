@@ -94,6 +94,7 @@ class kb_mashTest(unittest.TestCase):
         return self.__class__.ctx
 
     # NOTE: According to Python unittest naming rules test method names should start from 'test'. # noqa
+    @unittest.skip('skip')
     def test_your_method(self):
         # Prepare test objects in workspace if needed using
         # self.getWsClient().save_objects({'workspace': self.getWsName(),
@@ -106,7 +107,18 @@ class kb_mashTest(unittest.TestCase):
         # self.assertEqual(ret[...], ...) or other unittest methods
         pass
 
+    @unittest.skip('skip')
     def test_mash_search(self):
         params = {'input_assembly_upa': self.get_genome_ref(), 'workspace_name': self.getWsName(),
                   'search_db': 'KBaseRefseq', 'max_hits': 100}
         self.getImpl().run_mash_dist_search(self.getContext(), params)
+
+    def test_mash_sketch_valid(self):
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        params = {'fasta_path': os.path.join(dir_path, 'data', 'ecoliMG1655.fa')}
+        self.getImpl().run_mash_sketch(self.getContext(), params)
+        output_path = os.path.join(dir_path, 'data', 'ecoliMG1655.fa.msh')
+        with open(output_path, 'rb') as output_file:
+            num_lines = sum(1 for line in output_file)
+        self.assertTrue(os.path.exists(output_path))
+        self.assertEqual(num_lines, 103)

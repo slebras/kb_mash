@@ -183,14 +183,14 @@ public class KbMashClient {
      * <p>Original spec-file function name: run_mash_sketch</p>
      * <pre>
      * </pre>
-     * @param   arg1   instance of type {@link us.kbase.kbmash.MashSketchParams MashSketchParams}
+     * @param   params   instance of type {@link us.kbase.kbmash.MashSketchParams MashSketchParams}
      * @return   parameter "results" of type {@link us.kbase.kbmash.MashSketchResults MashSketchResults}
      * @throws IOException if an IO exception occurs
      * @throws JsonClientException if a JSON RPC exception occurs
      */
-    public MashSketchResults runMashSketch(MashSketchParams arg1, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+    public MashSketchResults runMashSketch(MashSketchParams params, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
         List<Object> args = new ArrayList<Object>();
-        args.add(arg1);
+        args.add(params);
         TypeReference<List<MashSketchResults>> retType = new TypeReference<List<MashSketchResults>>() {};
         List<MashSketchResults> res = caller.jsonrpcCall("kb_mash.run_mash_sketch", args, retType, true, true, jsonRpcContext, this.serviceVersion);
         return res.get(0);
