@@ -15,42 +15,47 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * <p>Original spec-file type: MashSketchParams</p>
  * <pre>
  * *
- * * Pass in **one of** fasta_path, assembly_ref, or reads_ref
- * *   fasta_path - string - local file path to an input fasta/fastq
+ * * Pass in **one of** input_path, assembly_ref, or reads_ref
+ * *   input_path - string - local file path to an input fasta/fastq
  * *   assembly_ref - string - workspace reference to an Assembly type
  * *   reads_ref - string - workspace reference to a Reads type
+ * * Optionally, pass in a boolean indicating whether you are using paired-end reads.
+ * *   paired_ends - boolean - whether you are passing in paired ends
  * </pre>
  * 
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("com.googlecode.jsonschema2pojo")
 @JsonPropertyOrder({
-    "fasta_path",
+    "input_path",
     "assembly_ref",
-    "reads_ref"
+    "reads_ref",
+    "paired_ends"
 })
 public class MashSketchParams {
 
-    @JsonProperty("fasta_path")
-    private String fastaPath;
+    @JsonProperty("input_path")
+    private String inputPath;
     @JsonProperty("assembly_ref")
     private String assemblyRef;
     @JsonProperty("reads_ref")
     private String readsRef;
+    @JsonProperty("paired_ends")
+    private Long pairedEnds;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("fasta_path")
-    public String getFastaPath() {
-        return fastaPath;
+    @JsonProperty("input_path")
+    public String getInputPath() {
+        return inputPath;
     }
 
-    @JsonProperty("fasta_path")
-    public void setFastaPath(String fastaPath) {
-        this.fastaPath = fastaPath;
+    @JsonProperty("input_path")
+    public void setInputPath(String inputPath) {
+        this.inputPath = inputPath;
     }
 
-    public MashSketchParams withFastaPath(String fastaPath) {
-        this.fastaPath = fastaPath;
+    public MashSketchParams withInputPath(String inputPath) {
+        this.inputPath = inputPath;
         return this;
     }
 
@@ -84,6 +89,21 @@ public class MashSketchParams {
         return this;
     }
 
+    @JsonProperty("paired_ends")
+    public Long getPairedEnds() {
+        return pairedEnds;
+    }
+
+    @JsonProperty("paired_ends")
+    public void setPairedEnds(Long pairedEnds) {
+        this.pairedEnds = pairedEnds;
+    }
+
+    public MashSketchParams withPairedEnds(Long pairedEnds) {
+        this.pairedEnds = pairedEnds;
+        return this;
+    }
+
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
@@ -96,7 +116,7 @@ public class MashSketchParams {
 
     @Override
     public String toString() {
-        return ((((((((("MashSketchParams"+" [fastaPath=")+ fastaPath)+", assemblyRef=")+ assemblyRef)+", readsRef=")+ readsRef)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((((("MashSketchParams"+" [inputPath=")+ inputPath)+", assemblyRef=")+ assemblyRef)+", readsRef=")+ readsRef)+", pairedEnds=")+ pairedEnds)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

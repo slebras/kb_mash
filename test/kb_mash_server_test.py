@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 import unittest
 import os  # noqa: F401
-import json  # noqa: F401
 import time
-import requests
 import shutil
+
+from ReadsUtils.ReadsUtilsClient import ReadsUtils
 
 from os import environ
 try:
@@ -12,13 +12,12 @@ try:
 except:
     from configparser import ConfigParser  # py3
 
-from pprint import pprint  # noqa: F401
-
 from biokbase.workspace.client import Workspace as workspaceService
 from kb_mash.kb_mashImpl import kb_mash
 from kb_mash.kb_mashServer import MethodContext
 from kb_mash.authclient import KBaseAuth as _KBaseAuth
 from AssemblyUtil.AssemblyUtilClient import AssemblyUtil
+
 
 class kb_mashTest(unittest.TestCase):
 
@@ -48,14 +47,14 @@ class kb_mashTest(unittest.TestCase):
                         'authenticated': 1})
         cls.wsURL = cls.cfg['workspace-url']
         cls.wsClient = workspaceService(cls.wsURL)
-        #suffix = int(time.time() * 1000)
-        #wsName = "test_kb_mash_" + str(suffix)
-        #cls.ws_info = cls.wsClient.create_workspace({'workspace': wsName})
+        # suffix = int(time.time() * 1000)
+        # wsName = "test_kb_mash_" + str(suffix)
+        # cls.ws_info = cls.wsClient.create_workspace({'workspace': wsName})
         cls.serviceImpl = kb_mash(cls.cfg)
         cls.scratch = cls.cfg['scratch']
         cls.callback_url = os.environ['SDK_CALLBACK_URL']
-        #cls.au = AssemblyUtil(os.environ['SDK_CALLBACK_URL'])
-        #cls.setup_data()
+        # cls.au = AssemblyUtil(os.environ['SDK_CALLBACK_URL'])
+        # cls.setup_data()
 
     @classmethod
     def tearDownClass(cls):
@@ -71,9 +70,11 @@ class kb_mashTest(unittest.TestCase):
         target = os.path.join(self.scratch, tf)
         self.genome_path = target
         shutil.copy('data/' + tf, target)
-        self.__class__.genomeInfo = au.save_assembly_from_fasta({'file': {'path': target},
-                                                   'workspace_name': self.getWsName(),
-                                                   'assembly_name': 'ecoliMG1655'})
+        self.__class__.genomeInfo = au.save_assembly_from_fasta({
+            'file': {'path': target},
+            'workspace_name': self.getWsName(),
+            'assembly_name': 'ecoliMG1655'
+        })
         return self.__class__.genomeInfo
 
     def getWsClient(self):
@@ -94,20 +95,6 @@ class kb_mashTest(unittest.TestCase):
     def getContext(self):
         return self.__class__.ctx
 
-    # NOTE: According to Python unittest naming rules test method names should start from 'test'. # noqa
-    @unittest.skip('skip')
-    def test_your_method(self):
-        # Prepare test objects in workspace if needed using
-        # self.getWsClient().save_objects({'workspace': self.getWsName(),
-        #                                  'objects': []})
-        #
-        # Run your method by
-        # ret = self.getImpl().your_method(self.getContext(), parameters...)
-        #
-        # Check returned data with
-        # self.assertEqual(ret[...], ...) or other unittest methods
-        pass
-
     def test_mash_search(self):
         params = {'input_assembly_upa': self.get_genome_ref(), 'workspace_name': self.getWsName(),
                   'search_db': 'KBaseRefseq', 'max_hits': 100}
@@ -115,7 +102,7 @@ class kb_mashTest(unittest.TestCase):
 
     def test_mash_sketch_valid_local(self):
         dir_path = os.path.dirname(os.path.realpath(__file__))
-        params = {'fasta_path': os.path.join(dir_path, 'data', 'ecoliMG1655.fa')}
+        params = {'input_path': os.path.join(dir_path, 'data', 'ecoliMG1655.fa')}
         self.getImpl().run_mash_sketch(self.getContext(), params)
         output_path = os.path.join(dir_path, 'data', 'ecoliMG1655.fa.msh')
         with open(output_path, 'rb') as output_file:
@@ -133,15 +120,25 @@ class kb_mashTest(unittest.TestCase):
         self.assertTrue(os.path.exists(output_path))
         self.assertEqual(num_lines, 103)
 
-    @unittest.skip('TODO')
     def test_mash_sketch_valid_reads_ref(self):
-        assembly_ref = self.get_genome_ref()
-        # dir_path = os.path.dirname(os.path.realpath(__file__))
-        params = {'assembly_ref': assembly_ref}
-        self.getImpl().run_mash_sketch(self.getContext(), params)
-        # # Need to check for the output in scratch
-        # output_path = os.path.join(dir_path, 'data', 'ecoliMG1655.fa.msh')
-        # with open(output_path, 'rb') as output_file:
-        #     num_lines = sum(1 for line in output_file)
-        # self.assertTrue(os.path.exists(output_path))
-        # self.assertEqual(num_lines, 103)
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        reads_file_name = 'reads-example.fastq'
+        reads_test_path = os.path.join(dir_path, 'data', reads_file_name)
+        reads_scratch_path = os.path.join(self.scratch, reads_file_name)
+        shutil.copy(reads_test_path, reads_scratch_path)
+        reads_utils = ReadsUtils(self.callback_url)
+        upload_result = reads_utils.upload_reads({
+            'wsname': self.getWsName(),
+            'interleaved': 'true',
+            'fwd_file': reads_scratch_path,
+            'name': 'example-reads',
+            'sequencing_tech': 'illumina'
+        })
+        reads_ref = upload_result['obj_ref']
+        params = {'reads_ref': reads_ref, 'paired_ends': True}
+        result = self.getImpl().run_mash_sketch(self.getContext(), params)
+        output_path = result[0]['sketch_path']
+        with open(output_path, 'rb') as output_file:
+            num_lines = sum(1 for line in output_file)
+        self.assertTrue(os.path.exists(output_path))
+        self.assertEqual(num_lines, 25)

@@ -20,15 +20,19 @@ class MashUtils:
     def __init__(self, config):
         self.scratch = os.path.abspath(config['scratch'])
 
-    def mash_sketch(self, genome_file_path):
+    def mash_sketch(self, genome_file_path, paired_ends=False):
         """
-        Generate a sketch file for a given fasta file path, saving the output to a tempfile.
+        Generate a sketch file for a given fasta/fastq file path, saving the output to a tempfile.
 
         Documentation: http://mash.readthedocs.io/en/latest/tutorials.html
         """
         assert os.path.exists(genome_file_path), 'genome_file_path must exist'
         output_path = genome_file_path + '.msh'
         args = [mash_bin, 'sketch', genome_file_path, '-o', output_path]
+        if paired_ends:
+            # Sketch the reads using `-m 2` to improve results by ignoring single-copy k-mers, which
+            # are more likely to be erroneous:
+            args = args + ['-m', '2']
         self._run_command(' '.join(args))
         return output_path
 

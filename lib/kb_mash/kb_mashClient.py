@@ -35,10 +35,10 @@ class kb_mash(object):
 
     def run_mash_dist_search(self, params, context=None):
         """
-        :param params: instance of type "MashParams" (Insert your typespec
-           information here.) -> structure: parameter "input_assembly_upa" of
-           String, parameter "workspace_name" of String, parameter
-           "search_db" of String, parameter "max_hits" of Long
+        :param params: instance of type "MashParams" -> structure: parameter
+           "input_assembly_upa" of String, parameter "workspace_name" of
+           String, parameter "search_db" of String, parameter "max_hits" of
+           Long
         :returns: instance of type "MashResults" -> structure: parameter
            "report_name" of String, parameter "report_ref" of String
         """
@@ -50,12 +50,16 @@ class kb_mash(object):
         """
         Generate a sketch file from a fasta/fastq file
         :param params: instance of type "MashSketchParams" (* * Pass in **one
-           of** fasta_path, assembly_ref, or reads_ref *   fasta_path -
+           of** input_path, assembly_ref, or reads_ref *   input_path -
            string - local file path to an input fasta/fastq *   assembly_ref
            - string - workspace reference to an Assembly type *   reads_ref -
-           string - workspace reference to a Reads type) -> structure:
-           parameter "fasta_path" of String, parameter "assembly_ref" of
-           String, parameter "reads_ref" of String
+           string - workspace reference to a Reads type * Optionally, pass in
+           a boolean indicating whether you are using paired-end reads. *  
+           paired_ends - boolean - whether you are passing in paired ends) ->
+           structure: parameter "input_path" of String, parameter
+           "assembly_ref" of String, parameter "reads_ref" of String,
+           parameter "paired_ends" of type "boolean" (Insert your typespec
+           information here.)
         :returns: instance of type "MashSketchResults" (* * Returns the local
            scratch file path of the generated sketch file. * Will have the
            extension '.msh') -> structure: parameter "sketch_path" of String

@@ -7,6 +7,7 @@ module kb_mash {
         Insert your typespec information here.
     */
 
+    typedef int boolean;
 
     typedef structure {
         string input_assembly_upa;
@@ -25,15 +26,18 @@ module kb_mash {
 
 
     /**
-     * Pass in **one of** fasta_path, assembly_ref, or reads_ref
-     *   fasta_path - string - local file path to an input fasta/fastq
+     * Pass in **one of** input_path, assembly_ref, or reads_ref
+     *   input_path - string - local file path to an input fasta/fastq
      *   assembly_ref - string - workspace reference to an Assembly type
      *   reads_ref - string - workspace reference to a Reads type
+     * Optionally, pass in a boolean indicating whether you are using paired-end reads.
+     *   paired_ends - boolean - whether you are passing in paired ends
      */
     typedef structure {
-        string fasta_path;
+        string input_path;
         string assembly_ref;
         string reads_ref;
+        boolean paired_ends;
     } MashSketchParams;
 
     /**

@@ -25,7 +25,7 @@ class kb_mash:
     ######################################### noqa
     VERSION = "0.0.1"
     GIT_URL = ""
-    GIT_COMMIT_HASH = "98e34b800d89d422fba3ee65a2be3c058acc199e"
+    GIT_COMMIT_HASH = "0c70e502b92a6376c9c005f2a36a85e915e2d42b"
 
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
@@ -45,10 +45,10 @@ class kb_mash:
 
     def run_mash_dist_search(self, ctx, params):
         """
-        :param params: instance of type "MashParams" (Insert your typespec
-           information here.) -> structure: parameter "input_assembly_upa" of
-           String, parameter "workspace_name" of String, parameter
-           "search_db" of String, parameter "max_hits" of Long
+        :param params: instance of type "MashParams" -> structure: parameter
+           "input_assembly_upa" of String, parameter "workspace_name" of
+           String, parameter "search_db" of String, parameter "max_hits" of
+           Long
         :returns: instance of type "MashResults" -> structure: parameter
            "report_name" of String, parameter "report_ref" of String
         """
@@ -81,12 +81,16 @@ class kb_mash:
         """
         Generate a sketch file from a fasta/fastq file
         :param params: instance of type "MashSketchParams" (* * Pass in **one
-           of** fasta_path, assembly_ref, or reads_ref *   fasta_path -
+           of** input_path, assembly_ref, or reads_ref *   input_path -
            string - local file path to an input fasta/fastq *   assembly_ref
            - string - workspace reference to an Assembly type *   reads_ref -
-           string - workspace reference to a Reads type) -> structure:
-           parameter "fasta_path" of String, parameter "assembly_ref" of
-           String, parameter "reads_ref" of String
+           string - workspace reference to a Reads type * Optionally, pass in
+           a boolean indicating whether you are using paired-end reads. *  
+           paired_ends - boolean - whether you are passing in paired ends) ->
+           structure: parameter "input_path" of String, parameter
+           "assembly_ref" of String, parameter "reads_ref" of String,
+           parameter "paired_ends" of type "boolean" (Insert your typespec
+           information here.)
         :returns: instance of type "MashSketchResults" (* * Returns the local
            scratch file path of the generated sketch file. * Will have the
            extension '.msh') -> structure: parameter "sketch_path" of String
@@ -95,27 +99,24 @@ class kb_mash:
         # return variables are: results
         #BEGIN run_mash_sketch
         if 'reads_ref' in params:
-            reads_utils = ReadsUtils(self.config)
+            reads_utils = ReadsUtils(self.callbackURL)
             result = reads_utils.download_reads({
-                'read_libraries': [params['reads_ref']]
+                'read_libraries': [params['reads_ref']],
+                'interleaved': 'true'
             })
-            print(result)
-            reads_file = result['files'][params['reads_ref']]['files']
-            print(reads_file, '!')
-            fasta_path = 'nonexistent!'
-            # TODO concat all the reads files?
-        if 'assembly_ref' in params:
+            input_path = result['files'][params['reads_ref']]['files']['fwd']
+        elif 'assembly_ref' in params:
             assembly_util = AssemblyUtil(self.callbackURL)
             result = assembly_util.get_assembly_as_fasta({'ref': params['assembly_ref']})
-            fasta_path = result['path']
-        elif 'fasta_path' in params:
-            fasta_path = params['fasta_path']
+            input_path = result['path']
+        elif 'input_path' in params:
+            input_path = params['input_path']
         else:
             raise ValueError(
-                'Invalid params. Must provide either `ws_ref` (workspace reference) or `fasta_path`'
+                'Invalid params; must provide one of `reads_ref`, `assembly_ref`, or `input_path`.'
             )
         mash_utils = MashUtils(self.config)
-        output_file_path = mash_utils.mash_sketch(fasta_path)
+        output_file_path = mash_utils.mash_sketch(input_path, paired_ends=params.get('paired_ends'))
         results = {'sketch_path': output_file_path}
         #END run_mash_sketch
 
