@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 #BEGIN_HEADER
 import os
+from AssemblyUtil.AssemblyUtilClient import AssemblyUtil
+from ReadsUtils.ReadsUtilsClient import ReadsUtils
 from kb_mash.kb_object_utils.KBObjectUtils import KBObjectUtils
 from kb_mash.mash_utils.MashUtils import MashUtils
 #END_HEADER
@@ -22,8 +24,8 @@ class kb_mash:
     # the latter method is running.
     ######################################### noqa
     VERSION = "0.0.1"
-    GIT_URL = "https://github.com/psdehal/kb_mash.git"
-    GIT_COMMIT_HASH = "d79e00da6706b9d8c4f1b04800ca8f91283da71b"
+    GIT_URL = ""
+    GIT_COMMIT_HASH = "0c70e502b92a6376c9c005f2a36a85e915e2d42b"
 
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
@@ -43,10 +45,10 @@ class kb_mash:
 
     def run_mash_dist_search(self, ctx, params):
         """
-        :param params: instance of type "MashParams" (Insert your typespec
-           information here.) -> structure: parameter "input_assembly_upa" of
-           String, parameter "workspace_name" of String, parameter
-           "search_db" of String
+        :param params: instance of type "MashParams" -> structure: parameter
+           "input_assembly_upa" of String, parameter "workspace_name" of
+           String, parameter "search_db" of String, parameter "max_hits" of
+           Long
         :returns: instance of type "MashResults" -> structure: parameter
            "report_name" of String, parameter "report_ref" of String
         """
@@ -59,7 +61,7 @@ class kb_mash:
         os.chdir(self.scratch)
         kb_obj_helper = KBObjectUtils(self.config)
         [file_list] = kb_obj_helper.stage_assembly_files([params['input_assembly_upa']])
-        print file_list
+        print(file_list)
         mash_helper = MashUtils(self.config)
         outfile = mash_helper.mash_dist_runner(file_list, self.SEARCH_DBS[params['search_db']])
         id_to_similarity = mash_helper.parse_search_results(outfile, params['max_hits'])
@@ -71,6 +73,56 @@ class kb_mash:
         # At some point might do deeper type checking...
         if not isinstance(results, dict):
             raise ValueError('Method run_mash_dist_search return value ' +
+                             'results is not type dict as required.')
+        # return the results
+        return [results]
+
+    def run_mash_sketch(self, ctx, params):
+        """
+        Generate a sketch file from a fasta/fastq file
+        :param params: instance of type "MashSketchParams" (* * Pass in **one
+           of** input_path, assembly_ref, or reads_ref *   input_path -
+           string - local file path to an input fasta/fastq *   assembly_ref
+           - string - workspace reference to an Assembly type *   reads_ref -
+           string - workspace reference to a Reads type * Optionally, pass in
+           a boolean indicating whether you are using paired-end reads. *  
+           paired_ends - boolean - whether you are passing in paired ends) ->
+           structure: parameter "input_path" of String, parameter
+           "assembly_ref" of String, parameter "reads_ref" of String,
+           parameter "paired_ends" of type "boolean" (Insert your typespec
+           information here.)
+        :returns: instance of type "MashSketchResults" (* * Returns the local
+           scratch file path of the generated sketch file. * Will have the
+           extension '.msh') -> structure: parameter "sketch_path" of String
+        """
+        # ctx is the context object
+        # return variables are: results
+        #BEGIN run_mash_sketch
+        if 'reads_ref' in params:
+            reads_utils = ReadsUtils(self.callbackURL)
+            result = reads_utils.download_reads({
+                'read_libraries': [params['reads_ref']],
+                'interleaved': 'true'
+            })
+            input_path = result['files'][params['reads_ref']]['files']['fwd']
+        elif 'assembly_ref' in params:
+            assembly_util = AssemblyUtil(self.callbackURL)
+            result = assembly_util.get_assembly_as_fasta({'ref': params['assembly_ref']})
+            input_path = result['path']
+        elif 'input_path' in params:
+            input_path = params['input_path']
+        else:
+            raise ValueError(
+                'Invalid params; must provide one of `reads_ref`, `assembly_ref`, or `input_path`.'
+            )
+        mash_utils = MashUtils(self.config)
+        output_file_path = mash_utils.mash_sketch(input_path, paired_ends=params.get('paired_ends'))
+        results = {'sketch_path': output_file_path}
+        #END run_mash_sketch
+
+        # At some point might do deeper type checking...
+        if not isinstance(results, dict):
+            raise ValueError('Method run_mash_sketch return value ' +
                              'results is not type dict as required.')
         # return the results
         return [results]

@@ -125,6 +125,7 @@ MashParams is a reference to a hash where the following keys are defined:
 	input_assembly_upa has a value which is a string
 	workspace_name has a value which is a string
 	search_db has a value which is a string
+	max_hits has a value which is an int
 MashResults is a reference to a hash where the following keys are defined:
 	report_name has a value which is a string
 	report_ref has a value which is a string
@@ -141,6 +142,7 @@ MashParams is a reference to a hash where the following keys are defined:
 	input_assembly_upa has a value which is a string
 	workspace_name has a value which is a string
 	search_db has a value which is a string
+	max_hits has a value which is an int
 MashResults is a reference to a hash where the following keys are defined:
 	report_name has a value which is a string
 	report_ref has a value which is a string
@@ -202,6 +204,104 @@ MashResults is a reference to a hash where the following keys are defined:
     }
 }
  
+
+
+=head2 run_mash_sketch
+
+  $results = $obj->run_mash_sketch($params)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$params is a kb_mash.MashSketchParams
+$results is a kb_mash.MashSketchResults
+MashSketchParams is a reference to a hash where the following keys are defined:
+	input_path has a value which is a string
+	assembly_ref has a value which is a string
+	reads_ref has a value which is a string
+	paired_ends has a value which is a kb_mash.boolean
+boolean is an int
+MashSketchResults is a reference to a hash where the following keys are defined:
+	sketch_path has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+$params is a kb_mash.MashSketchParams
+$results is a kb_mash.MashSketchResults
+MashSketchParams is a reference to a hash where the following keys are defined:
+	input_path has a value which is a string
+	assembly_ref has a value which is a string
+	reads_ref has a value which is a string
+	paired_ends has a value which is a kb_mash.boolean
+boolean is an int
+MashSketchResults is a reference to a hash where the following keys are defined:
+	sketch_path has a value which is a string
+
+
+=end text
+
+=item Description
+
+Generate a sketch file from a fasta/fastq file
+
+=back
+
+=cut
+
+ sub run_mash_sketch
+{
+    my($self, @args) = @_;
+
+# Authentication: required
+
+    if ((my $n = @args) != 1)
+    {
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
+							       "Invalid argument count for function run_mash_sketch (received $n, expecting 1)");
+    }
+    {
+	my($params) = @args;
+
+	my @_bad_arguments;
+        (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"params\" (value was \"$params\")");
+        if (@_bad_arguments) {
+	    my $msg = "Invalid arguments passed to run_mash_sketch:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+								   method_name => 'run_mash_sketch');
+	}
+    }
+
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "kb_mash.run_mash_sketch",
+	    params => \@args,
+    });
+    if ($result) {
+	if ($result->is_error) {
+	    Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
+					       code => $result->content->{error}->{code},
+					       method_name => 'run_mash_sketch',
+					       data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
+					      );
+	} else {
+	    return wantarray ? @{$result->result} : $result->result->[0];
+	}
+    } else {
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method run_mash_sketch",
+					    status_line => $self->{client}->status_line,
+					    method_name => 'run_mash_sketch',
+				       );
+    }
+}
+ 
   
 sub status
 {
@@ -245,16 +345,16 @@ sub version {
             Bio::KBase::Exceptions::JSONRPC->throw(
                 error => $result->error_message,
                 code => $result->content->{code},
-                method_name => 'run_mash_dist_search',
+                method_name => 'run_mash_sketch',
             );
         } else {
             return wantarray ? @{$result->result} : $result->result->[0];
         }
     } else {
         Bio::KBase::Exceptions::HTTP->throw(
-            error => "Error invoking method run_mash_dist_search",
+            error => "Error invoking method run_mash_sketch",
             status_line => $self->{client}->status_line,
-            method_name => 'run_mash_dist_search',
+            method_name => 'run_mash_sketch',
         );
     }
 }
@@ -291,7 +391,7 @@ sub _validate_version {
 
 
 
-=head2 MashParams
+=head2 boolean
 
 =over 4
 
@@ -307,10 +407,37 @@ Insert your typespec information here.
 =begin html
 
 <pre>
+an int
+</pre>
+
+=end html
+
+=begin text
+
+an int
+
+=end text
+
+=back
+
+
+
+=head2 MashParams
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
 a reference to a hash where the following keys are defined:
 input_assembly_upa has a value which is a string
 workspace_name has a value which is a string
 search_db has a value which is a string
+max_hits has a value which is an int
 
 </pre>
 
@@ -322,6 +449,7 @@ a reference to a hash where the following keys are defined:
 input_assembly_upa has a value which is a string
 workspace_name has a value which is a string
 search_db has a value which is a string
+max_hits has a value which is an int
 
 
 =end text
@@ -354,6 +482,90 @@ report_ref has a value which is a string
 a reference to a hash where the following keys are defined:
 report_name has a value which is a string
 report_ref has a value which is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 MashSketchParams
+
+=over 4
+
+
+
+=item Description
+
+*
+* Pass in **one of** input_path, assembly_ref, or reads_ref
+*   input_path - string - local file path to an input fasta/fastq
+*   assembly_ref - string - workspace reference to an Assembly type
+*   reads_ref - string - workspace reference to a Reads type
+* Optionally, pass in a boolean indicating whether you are using paired-end reads.
+*   paired_ends - boolean - whether you are passing in paired ends
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+input_path has a value which is a string
+assembly_ref has a value which is a string
+reads_ref has a value which is a string
+paired_ends has a value which is a kb_mash.boolean
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+input_path has a value which is a string
+assembly_ref has a value which is a string
+reads_ref has a value which is a string
+paired_ends has a value which is a kb_mash.boolean
+
+
+=end text
+
+=back
+
+
+
+=head2 MashSketchResults
+
+=over 4
+
+
+
+=item Description
+
+*
+* Returns the local scratch file path of the generated sketch file.
+* Will have the extension '.msh'
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+sketch_path has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+sketch_path has a value which is a string
 
 
 =end text
