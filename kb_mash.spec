@@ -5,6 +5,8 @@ A KBase module: kb_mash
 module kb_mash {
     /*
         Insert your typespec information here.
+
+        add back in the max_hits argument when jay adds it to sketch service.
     */
 
     typedef int boolean;
@@ -13,7 +15,6 @@ module kb_mash {
         string input_assembly_upa;
         string workspace_name;
         string search_db;
-        int max_hits;
     } MashParams;
 
     typedef structure {

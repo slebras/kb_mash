@@ -96,8 +96,7 @@ class kb_mashTest(unittest.TestCase):
         return self.__class__.ctx
 
     def test_mash_search(self):
-        params = {'input_assembly_upa': self.get_genome_ref(), 'workspace_name': self.getWsName(),
-                  'search_db': 'KBaseRefseq', 'max_hits': 100}
+        params = {'input_assembly_upa': self.get_genome_ref(), 'workspace_name': self.getWsName()}
         self.getImpl().run_mash_dist_search(self.getContext(), params)
 
     def test_mash_sketch_valid_local(self):
