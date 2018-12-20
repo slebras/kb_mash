@@ -1,8 +1,10 @@
 import time
 import os
-import errno
+# import errno
+import json
 import subprocess
 import csv
+import requests
 
 
 def log(message, prefix_newline=False):
@@ -13,12 +15,13 @@ def log(message, prefix_newline=False):
 
 
 mash_bin = '/kb/module/mash-Linux64-v2.0/mash'
-
+# ahs_url  = 'https://homology.kbase.us/namespace/%s/search'
 
 class MashUtils:
 
     def __init__(self, config):
         self.scratch = os.path.abspath(config['scratch'])
+        self.sw_url = config['srv-wiz-url']
 
     def mash_sketch(self, genome_file_path, paired_ends=False):
         """
@@ -36,25 +39,66 @@ class MashUtils:
         self._run_command(' '.join(args))
         return output_path
 
-    def mash_dist_runner(self, file_path, search_db):
-        output_file_name = "outfile"
-        dist_search_command = ['/kb/module/mash-Linux64-v2.0/mash', 'dist', search_db,
-                               file_path, "| sort -gk3 >", output_file_name]
-        self._run_command(' '.join(dist_search_command))
-        return output_file_name
+    def get_sketch_service_url_with_service_wizard(self):
+        '''
+        '''
+        json_obj = {
+            "method":"ServiceWizard.get_service_status",
+            "id":'',
+            "params":[{"module_name":"sketch_service","version":"beta"}],
+            "version":"1.1"
+        }
 
-    def parse_search_results(self, results_path, maxcount):
+        sw_resp  = requests.post(url=self.sw_url, data=json.dumps(json_obj))
+        ahs_resp = sw_resp.json()
+        ahs_url  = ahs_resp['result'][0]['url']
+
+        return ahs_url
+
+    def sketch_service_query(self, assembly_upa):
+        '''Query assembly homology service to leverage its caching and mash implementation
+
+        params:
+            assembly_upa - reference to assembly 
+        '''
+        payload = {
+            "method":"get_homologs",
+            "params":[assembly_upa]
+        }
+        # get current sketch_service url from service wizard
+        sketch_url = self.get_sketch_service_url_with_service_wizard()
+        resp = requests.post(url=sketch_url, data=json.dumps(payload),
+                            headers={'content-type':'application/json'})
+
+        return self.parse_results(resp.json())
+
+    def parse_results(self, results_data):
+        '''
+        params:
+            results_data: dictionary response from sketch_service
+        '''
+        if 'error' in results_data:
+            raise RuntimeError("Sketch_service Error: " + results_data['error'])
+        if 'result' not in results_data:
+            print('billiejean',results_data)
+            raise ValueError("No results in JSON response body")
+        if not results_data['result']:
+            print('billiejean',results_data)
+            raise ValueError("results empty in JSON response body")
+        if 'distances' not in results_data['result']:
+            print('billiejean',results_data)
+            raise ValueError("No Distances in results JSON response")
+
+        distances = results_data['result']['distances']
         id_to_similarity = {}
-
-        with open(results_path, 'rb') as fh:
-            csvfile = csv.reader(fh, delimiter='\t')
-            count = 0
-            for line in csvfile:
-                if count >= maxcount:
-                    break
-                id_to_similarity[line[0]] = float(line[2])
-                count += 1
-        return id_to_similarity
+        for d in distances:
+            id_to_similarity[d['sourceid']] = float(d['dist'])
+            if 'kbase_id' in d:
+                upa = d['kbase_id']
+            else:
+                upa = None
+            id_to_upa[d['sourceid']] = upa
+        return id_to_similarity, id_to_upa
 
     def _run_command(self, command):
         """
@@ -73,18 +117,3 @@ class MashUtils:
             error_msg = 'Error running command:\n{}\n'.format(command)
             error_msg += 'Exit Code: {}\nOutput:\n{}'.format(exitCode, output)
             raise ValueError(error_msg)
-
-    def _mkdir_p(self, path):
-        """
-        _mkdir_p: make directory for given path
-        """
-        # https://stackoverflow.com/a/600612/643675
-        if not path:
-            return
-        try:
-            os.makedirs(path)
-        except OSError as exc:
-            if exc.errno == errno.EEXIST and os.path.isdir(path):
-                pass
-            else:
-                raise
