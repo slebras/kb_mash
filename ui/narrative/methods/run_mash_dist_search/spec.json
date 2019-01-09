@@ -48,6 +48,20 @@
               }
             ]
           }
+        },
+        {
+            "id":"n_max_results",
+            "optional":false,
+            "advanced":false,
+            "allow_multiple":false,
+            "default_values":[10],
+            "field_type":"text",
+            "text_options":{
+                "valid_ws_types":[],
+                "validate_as":"int",
+                "min_int":1,
+                "max_int":100
+            }
         }
     ],
     "behavior": {
@@ -66,8 +80,12 @@
                   "target_type_transform": "resolved-ref"
                 },
                 {
-                  "input_parameter": "search_db",
-                  "target_property": "search_db"
+                    "input_parameter": "search_db",
+                    "target_property": "search_db"
+                },
+                {
+                    "input_parameter":"n_max_results",
+                    "target_property":"n_max_results"
                 }
             ],
             "output_mapping": [

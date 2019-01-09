@@ -55,7 +55,7 @@ class MashUtils:
 
         return ahs_url
 
-    def sketch_service_query(self, assembly_upa):
+    def sketch_service_query(self, assembly_upa, n_max_results):
         '''Query assembly homology service to leverage its caching and mash implementation
 
         params:
@@ -63,7 +63,8 @@ class MashUtils:
         '''
         payload = {
             "method":"get_homologs",
-            "params":[assembly_upa]
+            "params":[assembly_upa],
+            "n_max_results":n_max_results
         }
         # get current sketch_service url from service wizard
         sketch_url = self.get_sketch_service_url_with_service_wizard()

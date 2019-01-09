@@ -4,9 +4,11 @@ A KBase module: kb_mash
 
 module kb_mash {
     /*
-        Insert your typespec information here.
-
-        add back in the max_hits argument when jay adds it to sketch service.
+    params:
+        input_assembly_upa: workspace reference to an assembly object
+        workspace_name: name of current workspace
+        search_db: database to search
+        n_max_results: number of results to return, integer between 1 and 100
     */
 
     typedef int boolean;
@@ -15,6 +17,7 @@ module kb_mash {
         string input_assembly_upa;
         string workspace_name;
         string search_db;
+        int n_max_results;
     } MashParams;
 
     typedef structure {
