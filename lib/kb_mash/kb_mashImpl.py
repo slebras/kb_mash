@@ -61,7 +61,7 @@ class kb_mash:
         # [file_list] = kb_obj_helper.stage_assembly_files([params['input_assembly_upa']])
         # print(file_list)
         mash_utils = MashUtils(self.config)
-        id_to_similarity, id_to_upa = mash_utils.sketch_service_query(params['input_assembly_upa'])
+        id_to_similarity, id_to_upa = mash_utils.sketch_service_query(params['input_assembly_upa'], params['n_max_results'])
         report = kb_obj_helper.create_search_report(
             params['workspace_name'],
             id_to_similarity,
