@@ -11,7 +11,7 @@ module-version:
     0.0.1
 
 owners:
-    [psdehal, jayrbolton]
+    [psdehal, jayrbolton, slebras]
 
 data-version:
     0.0.1
