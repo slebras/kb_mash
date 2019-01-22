@@ -56,6 +56,9 @@ class kb_mash:
         # return variables are: results
         #BEGIN run_mash_dist_search
 
+        search_db = params['search_db']
+        n_max_results = params['n_max_results']
+
         os.chdir(self.scratch)
         kb_obj_helper = KBObjectUtils(self.config)
         # [file_list] = kb_obj_helper.stage_assembly_files([params['input_assembly_upa']])

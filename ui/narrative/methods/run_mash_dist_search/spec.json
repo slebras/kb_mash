@@ -45,6 +45,10 @@
               {
                 "value": "KBaseRefseq",
                 "display": "KBaseRefseq"
+              },
+              {
+                "value": "JGI_Mags",
+                "display": "JGI_Mags"
               }
             ]
           }
