@@ -62,7 +62,7 @@ class kb_mashTest(unittest.TestCase):
             cls.wsClient.delete_workspace({'workspace': cls.wsName})
             print('Test workspace was deleted')
 
-    def get_genome_ref(self):
+    def get_genome_ref(self, ws_name):
         if hasattr(self.__class__, 'genomeInfo'):
             return self.__class__.genomeInfo
         au = AssemblyUtil(os.environ['SDK_CALLBACK_URL'])
@@ -72,7 +72,7 @@ class kb_mashTest(unittest.TestCase):
         shutil.copy('data/' + tf, target)
         self.__class__.genomeInfo = au.save_assembly_from_fasta({
             'file': {'path': target},
-            'workspace_name': self.getWsName(),
+            'workspace_name': ws_name,
             'assembly_name': 'ecoliMG1655'
         })
         return self.__class__.genomeInfo
@@ -96,7 +96,9 @@ class kb_mashTest(unittest.TestCase):
         return self.__class__.ctx
 
     def test_mash_search(self):
-        params = {'input_assembly_upa': self.get_genome_ref(), 'workspace_name': self.getWsName()}
+        ws_name = self.getWsName()
+        params = {'input_assembly_upa': self.get_genome_ref(ws_name), 'workspace_name': ws_name,
+                  'search_db':'NCBI_Refseq', 'n_max_results':10}
         self.getImpl().run_mash_dist_search(self.getContext(), params)
 
     def test_mash_sketch_valid_local(self):
@@ -110,7 +112,8 @@ class kb_mashTest(unittest.TestCase):
         self.assertEqual(num_lines, 103)
 
     def test_mash_sketch_valid_assembly_ref(self):
-        assembly_ref = self.get_genome_ref()
+        ws_name = self.getWsName()
+        assembly_ref = self.get_genome_ref(ws_name)
         params = {'assembly_ref': assembly_ref}
         self.getImpl().run_mash_sketch(self.getContext(), params)
         output_path = os.path.join(self.scratch, 'ecoliMG1655.fa.msh')

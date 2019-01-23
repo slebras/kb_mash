@@ -83,13 +83,13 @@ class MashUtils:
         if 'error' in results_data:
             raise RuntimeError("Sketch_service Error: " + results_data['error'])
         if 'result' not in results_data:
-            print('billiejean',results_data)
+            # print('billiejean',results_data)
             raise ValueError("No results in JSON response body")
         if not results_data['result']:
-            print('billiejean',results_data)
+            # print('billiejean',results_data)
             raise ValueError("results empty in JSON response body")
         if 'distances' not in results_data['result']:
-            print('billiejean',results_data)
+            # print('billiejean',results_data)
             raise ValueError("No Distances in results JSON response")
 
         distances = results_data['result']['distances']

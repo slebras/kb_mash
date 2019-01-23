@@ -47,8 +47,8 @@
                 "display": "KBaseRefseq"
               },
               {
-                "value": "JGI_Mags",
-                "display": "JGI_Mags"
+                "value": "JGI_MAGS",
+                "display": "JGI_MAGS"
               }
             ]
           }
