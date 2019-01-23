@@ -56,8 +56,14 @@ class kb_mash:
         # return variables are: results
         #BEGIN run_mash_dist_search
 
-        search_db = params['search_db']
-        n_max_results = params['n_max_results']
+        if params.get('search_db'):
+            search_db = params.get('search_db')
+        else:
+            raise ValueError("search_db not present in params")
+        if params.get('n_max_results'):
+            n_max_results = params.get('n_max_results', 10)
+        else:
+            raise ValueError("n_max_results not present as an argument in params")
 
         os.chdir(self.scratch)
         kb_obj_helper = KBObjectUtils(self.config)
