@@ -55,22 +55,26 @@ class MashUtils:
 
         return ahs_url
 
-    def sketch_service_query(self, assembly_upa, n_max_results):
+    def sketch_service_query(self, assembly_upa, n_max_results, search_db, auth_token):
         '''Query assembly homology service to leverage its caching and mash implementation
 
         params:
             assembly_upa - reference to assembly 
+            n_max_results - number of results to return
+            search_db - string to specify search database
         '''
         payload = {
             "method":"get_homologs",
-            "params":{'ws_ref':assembly_upa,
-                      "n_max_results":n_max_results
-                     }
+            "params":{
+                'ws_ref':assembly_upa,
+                'n_max_results':n_max_results,
+                'search_db': search_db
+            }
         }
         # get current sketch_service url from service wizard
         sketch_url = self.get_sketch_service_url_with_service_wizard()
         resp = requests.post(url=sketch_url, data=json.dumps(payload),
-                            headers={'content-type':'application/json'})
+                            headers={'content-type':'application/json', 'authorization':auth_token})
 
         return self.parse_results(resp.json())
 
@@ -79,16 +83,11 @@ class MashUtils:
         params:
             results_data: dictionary response from sketch_service
         '''
-        if 'error' in results_data:
+        if results_data.get('error'):
             raise RuntimeError("Sketch_service Error: " + results_data['error'])
-        if 'result' not in results_data:
-            print('billiejean',results_data)
-            raise ValueError("No results in JSON response body")
-        if not results_data['result']:
-            print('billiejean',results_data)
-            raise ValueError("results empty in JSON response body")
-        if 'distances' not in results_data['result']:
-            print('billiejean',results_data)
+        if not results_data.get('result'):
+            raise ValueError("No results or results empty in JSON response body")
+        if not results_data['result'].get('distances'):
             raise ValueError("No Distances in results JSON response")
 
         distances = results_data['result']['distances']

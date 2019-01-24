@@ -37,6 +37,7 @@ class kb_mash:
         self.config = config
         self.scratch = os.path.abspath(config['scratch'])
         self.callbackURL = os.environ['SDK_CALLBACK_URL']
+        self.auth_token = os.environ['KB_AUTH_TOKEN']
         self.SEARCH_DBS = {'Ecoli': '/kb/module/test/data/ecolidb.msh',
                            'KBaseRefseq': '/data/kb_refseq_ci.msh'}
         #END_CONSTRUCTOR
@@ -56,12 +57,25 @@ class kb_mash:
         # return variables are: results
         #BEGIN run_mash_dist_search
 
+        if params.get('search_db'):
+            search_db = params.get('search_db')
+        else:
+            raise ValueError("search_db not present in params")
+        if params.get('n_max_results'):
+            n_max_results = params.get('n_max_results', 10)
+        else:
+            raise ValueError("n_max_results not present as an argument in params")
+        if params.get('input_assembly_upa'):
+            upa = params.get('input_assembly_upa')
+        else:
+            raise ValueError("Assembly workspace reference must be specified")
+
         os.chdir(self.scratch)
         kb_obj_helper = KBObjectUtils(self.config)
         # [file_list] = kb_obj_helper.stage_assembly_files([params['input_assembly_upa']])
         # print(file_list)
         mash_utils = MashUtils(self.config)
-        id_to_similarity, id_to_upa = mash_utils.sketch_service_query(params['input_assembly_upa'], params['n_max_results'])
+        id_to_similarity, id_to_upa = mash_utils.sketch_service_query(upa, n_max_results, search_db, self.auth_token)
         report = kb_obj_helper.create_search_report(
             params['workspace_name'],
             id_to_similarity,
