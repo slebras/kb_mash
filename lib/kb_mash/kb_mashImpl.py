@@ -37,6 +37,7 @@ class kb_mash:
         self.config = config
         self.scratch = os.path.abspath(config['scratch'])
         self.callbackURL = os.environ['SDK_CALLBACK_URL']
+        self.auth_token = os.environ['KB_AUTH_TOKEN']
         self.SEARCH_DBS = {'Ecoli': '/kb/module/test/data/ecolidb.msh',
                            'KBaseRefseq': '/data/kb_refseq_ci.msh'}
         #END_CONSTRUCTOR
@@ -74,7 +75,7 @@ class kb_mash:
         # [file_list] = kb_obj_helper.stage_assembly_files([params['input_assembly_upa']])
         # print(file_list)
         mash_utils = MashUtils(self.config)
-        id_to_similarity, id_to_upa = mash_utils.sketch_service_query(upa, n_max_results, search_db)
+        id_to_similarity, id_to_upa = mash_utils.sketch_service_query(upa, n_max_results, search_db, self.auth_token)
         report = kb_obj_helper.create_search_report(
             params['workspace_name'],
             id_to_similarity,
