@@ -32,7 +32,7 @@
             "options": [
               {
                 "value":"NCBI_Refseq",
-                "display":"NCBI Refseq database"
+                "display":"NCBI Refseq"
               },
               // namespaces we hope to add
               // {

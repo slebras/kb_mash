@@ -78,9 +78,14 @@ class kb_mash:
         id_to_similarity , id_to_upa = mash_utils.sketch_service_query(upa, n_max_results, search_db)
         # get ids that don't have a kbase id in the sketch/homology service
         diff_ids =  set(id_to_similarity.keys()) - set(id_to_upa.keys())
-        query_id_to_upa = mash_utils.id_mapping_query(diff_ids, search_db)
-        for key in query_id_to_upa:
-            id_to_upa[key] = query_id_to_upa[key]
+        if search_db == "NCBI_Refseq":
+            query_id_to_upa = mash_utils.id_mapping_query(diff_ids)
+            for key in query_id_to_upa:
+                id_to_upa[key] = query_id_to_upa[key]
+        else:
+            for key in diff_ids:
+                id_to_upa[key] = ""
+
         report = kb_obj_helper.create_search_report(
             params['workspace_name'],
             id_to_similarity,

@@ -100,13 +100,13 @@ class MashUtils:
                 id_to_upa[d['sourceid']] = d['kbase_id']
         return id_to_similarity, id_to_upa
 
-    def id_mapping_query(self, ids, search_db):
+    def id_mapping_query(self, ids):
         """
         """
         payload = {
             "ids":ids
         }
-        id_mapper_url = self.id_mapper_url + '/mapping/namespace/RefSeq'
+        id_mapper_url = self.id_mapper_url + '/mapping/RefSeq'
 
         resp = requests.get(url=id_mapper_url, data=json.dumps(payload))# ,headers={'Authorization':self.auth_token})
         return self.parse_mapper_response(resp.json())
@@ -121,18 +121,13 @@ class MashUtils:
         namespaces = set([])
         for id_ in resp:
             mappings = resp[id_]["mappings"]
-            if len(mappings) == 0:
-                # there is no id to map this to. 
-                # we should add some sort of dummy?
-                mapped_id = ""
-                id_to_upa[id_] = mapped_id
-
+            # default upa is no upa
+            id_to_upa[id_] = ""
             for mapping in mappings:
                 namespace = mapping['ns']
                 namespaces.add(namespace)
-                mapped_id = mapping['id']
-                id_to_upa[id_] = mapped_id
-
+                if namespace == "KBase":
+                    id_to_upa[id_] = mapping['id']
         print("available response namespaces in the idmapping service:",namespaces)
         return id_to_upa
 
