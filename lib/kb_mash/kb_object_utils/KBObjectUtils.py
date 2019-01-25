@@ -51,7 +51,7 @@ class KBObjectUtils:
         log('Looking up object names and scientific names in KBase data stores')
         wsrefs = []
         for x in id_to_upa.values():
-            if x is not "":
+            if x != "":
                 wsrefs.append({'ref':x})
         if len(ws_refs) > 0:
             ws = _Workspace(self.ws_url)
@@ -76,7 +76,7 @@ class KBObjectUtils:
                 upa_to_sci_name[upa] = t['data']['scientific_name']
             for id_ in id_to_upa.keys():
                 upa = id_to_upa[id_]
-                if upa == "":
+                if upa != "":
                     idmap[id_] = {'id': '{} ({})'.format(
                                     upa_to_name[upa], upa_to_sci_name[upa_to_taxon_upa[upa]]),
                                 'link': '/#dataview/' + upa.replace('_', '/')}

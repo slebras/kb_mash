@@ -133,7 +133,7 @@ class MashUtils:
                 mapped_id = mapping['id']
                 id_to_upa[id_] = mapped_id
 
-        print("available namespaces in the homology service:",namespaces)
+        print("available response namespaces in the idmapping service:",namespaces)
         return id_to_upa
 
     def _run_command(self, command):
