@@ -19,9 +19,11 @@ mash_bin = '/kb/module/mash-Linux64-v2.0/mash'
 
 class MashUtils:
 
-    def __init__(self, config):
+    def __init__(self, config, auth_token):
         self.scratch = os.path.abspath(config['scratch'])
         self.sw_url = config['srv-wiz-url']
+        self.id_mapper_url = config['id-mapper-url']
+        self.auth_token = auth_token
 
     def mash_sketch(self, genome_file_path, paired_ends=False):
         """
@@ -42,20 +44,20 @@ class MashUtils:
     def get_sketch_service_url_with_service_wizard(self):
         '''
         '''
-        json_obj = {
+        payload = {
             "method":"ServiceWizard.get_service_status",
             "id":'',
             "params":[{"module_name":"sketch_service","version":"beta"}],
             "version":"1.1"
         }
 
-        sw_resp  = requests.post(url=self.sw_url, data=json.dumps(json_obj))
+        sw_resp  = requests.post(url=self.sw_url, data=json.dumps(payload))
         ahs_resp = sw_resp.json()
         ahs_url  = ahs_resp['result'][0]['url']
 
         return ahs_url
 
-    def sketch_service_query(self, assembly_upa, n_max_results, search_db, auth_token):
+    def sketch_service_query(self, assembly_upa, n_max_results, search_db):
         '''Query assembly homology service to leverage its caching and mash implementation
 
         params:
@@ -74,7 +76,7 @@ class MashUtils:
         # get current sketch_service url from service wizard
         sketch_url = self.get_sketch_service_url_with_service_wizard()
         resp = requests.post(url=sketch_url, data=json.dumps(payload),
-                            headers={'content-type':'application/json', 'authorization':auth_token})
+                            headers={'content-type':'application/json', 'authorization':self.auth_token})
 
         return self.parse_results(resp.json())
 
@@ -91,15 +93,48 @@ class MashUtils:
             raise ValueError("No Distances in results JSON response")
 
         distances = results_data['result']['distances']
-        id_to_similarity = {}
+        id_to_similarity, id_to_upa = {}, {}
         for d in distances:
             id_to_similarity[d['sourceid']] = float(d['dist'])
-            if 'kbase_id' in d:
-                upa = d['kbase_id']
-            else:
-                upa = None
-            id_to_upa[d['sourceid']] = upa
+            if d.get('kbase_id'):
+                id_to_upa[d['sourceid']] = d['kbase_id']
         return id_to_similarity, id_to_upa
+
+    def id_mapping_query(self, ids, search_db):
+        """
+        """
+        payload = {
+            "ids":ids
+        }
+        id_mapper_url = self.id_mapper_url + '/mapping/namespace/RefSeq'
+
+        resp = requests.get(url=id_mapper_url, data=json.dumps(payload))# ,headers={'Authorization':self.auth_token})
+        return self.parse_mapper_response(resp.json())
+
+    def parse_mapper_response(self, resp):
+        """
+        """
+        if resp.get('error'):
+            raise("ID Mapper Error: "+ resp.get('error', "unknown error"))
+
+        id_to_upa = {}
+        namespaces = set([])
+        for id_ in resp:
+            mappings = resp[id_]["mappings"]
+            if len(mappings) == 0:
+                # there is no id to map this to. 
+                # we should add some sort of dummy?
+                mapped_id = ""
+                id_to_upa[id_] = mapped_id
+
+            for mapping in mappings:
+                namespace = mapping['ns']
+                namespaces.add(namespace)
+                mapped_id = mapping['id']
+                id_to_upa[id_] = mapped_id
+
+        print("available namespaces in the homology service:",namespaces)
+        return id_to_upa
 
     def _run_command(self, command):
         """

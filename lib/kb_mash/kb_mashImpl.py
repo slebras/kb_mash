@@ -38,8 +38,8 @@ class kb_mash:
         self.scratch = os.path.abspath(config['scratch'])
         self.callbackURL = os.environ['SDK_CALLBACK_URL']
         self.auth_token = os.environ['KB_AUTH_TOKEN']
-        self.SEARCH_DBS = {'Ecoli': '/kb/module/test/data/ecolidb.msh',
-                           'KBaseRefseq': '/data/kb_refseq_ci.msh'}
+        #self.SEARCH_DBS = {'Ecoli': '/kb/module/test/data/ecolidb.msh',
+        #                   'KBaseRefseq': '/data/kb_refseq_ci.msh'}
         #END_CONSTRUCTOR
         pass
 
@@ -74,8 +74,13 @@ class kb_mash:
         kb_obj_helper = KBObjectUtils(self.config)
         # [file_list] = kb_obj_helper.stage_assembly_files([params['input_assembly_upa']])
         # print(file_list)
-        mash_utils = MashUtils(self.config)
-        id_to_similarity, id_to_upa = mash_utils.sketch_service_query(upa, n_max_results, search_db, self.auth_token)
+        mash_utils = MashUtils(self.config, self.auth_token)
+        id_to_similarity , id_to_upa = mash_utils.sketch_service_query(upa, n_max_results, search_db)
+        # get ids that don't have a kbase id in the sketch/homology service
+        diff_ids =  set(id_to_similarity.keys()) - set(id_to_upa.keys())
+        query_id_to_upa = mash_utils.id_mapping_query(diff_ids, search_db)
+        for key in query_id_to_upa:
+            id_to_upa[key] = query_id_to_upa[key]
         report = kb_obj_helper.create_search_report(
             params['workspace_name'],
             id_to_similarity,

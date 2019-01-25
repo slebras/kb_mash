@@ -34,18 +34,19 @@
                 "value":"NCBI_Refseq",
                 "display":"NCBI Refseq database"
               },
-              {
-                "value": "Genbank",
-                "display": "Genbank"
-              },
-              {
-                "value": "Ecoli",
-                "display": "Ecoli"
-              },
-              {
-                "value": "KBaseRefseq",
-                "display": "KBaseRefseq"
-              },
+              // namespaces we hope to add
+              // {
+              //   "value": "Genbank",
+              //   "display": "Genbank"
+              // },
+              // {
+              //   "value": "Ecoli",
+              //   "display": "Ecoli"
+              // },
+              // {
+              //   "value": "KBaseRefseq",
+              //   "display": "KBaseRefseq"
+              // },
               {
                 "value": "JGI_MAGS",
                 "display": "JGI_MAGS"
