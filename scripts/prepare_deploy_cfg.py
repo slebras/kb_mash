@@ -25,6 +25,7 @@ if __name__ == "__main__":
                 "workspace_url = " + kbase_endpoint + "/ws\n" + \
                 "shock_url = " + kbase_endpoint + "/shock-api\n" + \
                 "handle_url = " + kbase_endpoint + "/handle_service\n" + \
+                "id_mapper_url = " + kbase_endpoint + "/idmapper/api/v1\n" + \
                 "srv_wiz_url = " + kbase_endpoint + "/service_wizard\n" + \
                 "njsw_url = " + kbase_endpoint + "/njs_wrapper\n"
         if "AUTH_SERVICE_URL" in os.environ:

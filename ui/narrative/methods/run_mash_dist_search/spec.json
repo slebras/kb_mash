@@ -32,19 +32,7 @@
             "options": [
               {
                 "value":"NCBI_Refseq",
-                "display":"NCBI Refseq database"
-              },
-              {
-                "value": "Genbank",
-                "display": "Genbank"
-              },
-              {
-                "value": "Ecoli",
-                "display": "Ecoli"
-              },
-              {
-                "value": "KBaseRefseq",
-                "display": "KBaseRefseq"
+                "display":"NCBI Refseq"
               },
               {
                 "value": "JGI_MAGS",

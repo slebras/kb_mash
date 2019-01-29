@@ -38,8 +38,8 @@ class kb_mash:
         self.scratch = os.path.abspath(config['scratch'])
         self.callbackURL = os.environ['SDK_CALLBACK_URL']
         self.auth_token = os.environ['KB_AUTH_TOKEN']
-        self.SEARCH_DBS = {'Ecoli': '/kb/module/test/data/ecolidb.msh',
-                           'KBaseRefseq': '/data/kb_refseq_ci.msh'}
+        #self.SEARCH_DBS = {'Ecoli': '/kb/module/test/data/ecolidb.msh',
+        #                   'KBaseRefseq': '/data/kb_refseq_ci.msh'}
         #END_CONSTRUCTOR
         pass
 
@@ -74,8 +74,18 @@ class kb_mash:
         kb_obj_helper = KBObjectUtils(self.config)
         # [file_list] = kb_obj_helper.stage_assembly_files([params['input_assembly_upa']])
         # print(file_list)
-        mash_utils = MashUtils(self.config)
-        id_to_similarity, id_to_upa = mash_utils.sketch_service_query(upa, n_max_results, search_db, self.auth_token)
+        mash_utils = MashUtils(self.config, self.auth_token)
+        id_to_similarity , id_to_upa = mash_utils.sketch_service_query(upa, n_max_results, search_db)
+        # get ids that don't have a kbase id in the sketch/homology service
+        diff_ids =  list(set(id_to_similarity.keys()) - set(id_to_upa.keys()))
+        if search_db == "NCBI_Refseq" and len(diff_ids) > 0:
+            query_id_to_upa = mash_utils.id_mapping_query(diff_ids)
+            for key in query_id_to_upa:
+                id_to_upa[key] = query_id_to_upa[key]
+        else:
+            for key in diff_ids:
+                id_to_upa[key] = ""
+
         report = kb_obj_helper.create_search_report(
             params['workspace_name'],
             id_to_similarity,
@@ -130,7 +140,7 @@ class kb_mash:
             raise ValueError(
                 'Invalid params; must provide one of `reads_ref`, `assembly_ref`, or `input_path`.'
             )
-        mash_utils = MashUtils(self.config)
+        mash_utils = MashUtils(self.config, self.auth_token)
         output_file_path = mash_utils.mash_sketch(input_path, paired_ends=params.get('paired_ends'))
         results = {'sketch_path': output_file_path}
         #END run_mash_sketch

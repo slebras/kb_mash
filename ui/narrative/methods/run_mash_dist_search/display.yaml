@@ -38,7 +38,7 @@ parameters :
         ui-name : |
             Search Database
         short-hint : |
-            Search Databases
+            Search Databases to query against
     n_max_results :
         ui-name : |
             Maximum number of results to return

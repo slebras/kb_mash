@@ -49,18 +49,18 @@ class KBObjectUtils:
         idmap = {}
 
         log('Looking up object names and scientific names in KBase data stores')
-        wsrefs = []
-        for x in id_to_upas.values():
-            if x is not None:
-                wsrefs.append({'ref':x})
+        ws_refs = []
+        for x in id_to_upa.values():
+            if x != "":
+                ws_refs.append({'ref':x})
         if len(ws_refs) > 0:
             ws = _Workspace(self.ws_url)
             # should really catch error and log here, later. Same below for taxa lookup
-            objs = ws.get_objects2({'objects': wsrefs, 'no_data': 1})['data']
+            objs = ws.get_objects2({'objects': ws_refs, 'no_data': 1})['data']
             upa_to_name = {}
             upa_to_taxon_upa = {}
             for o in objs:
-                upa_ = self._to_upa(o['info'], '_')
+                upa_ = self._to_upa(o['info'])
                 upa_to_name[upa_] = o['info'][1]
                 upa_to_taxon_upa[upa_] = o['refs'][0]
             taxrefs = [{'ref': x} for x in upa_to_taxon_upa.values()]
@@ -74,11 +74,11 @@ class KBObjectUtils:
             for t in taxobjs:
                 upa = self._to_upa(t['info'])
                 upa_to_sci_name[upa] = t['data']['scientific_name']
-            for id_ in id_to_upa.keys():
-                if id_to_upa[id_] in upa_to_name.keys():
-                    upa = id_to_upa[id_]
-                    idmap[id_] = {'id': '{} ({})'.format(
-                                    upa_to_name[upa], upa_to_sci_name[upa_to_taxon_upa[upa]]),
+            for id_, upa in id_to_upa.items():
+                upa = upa.replace('_','/')
+                if upa != "" and upa_to_name.get(upa) and upa_to_taxon_upa.get(upa):
+                    idmap[id_] = {'id': '{} ({})'.format(upa_to_name[upa],
+                                        upa_to_sci_name[upa_to_taxon_upa[upa]]),
                                 'link': '/#dataview/' + upa.replace('_', '/')}
 
         return idmap
