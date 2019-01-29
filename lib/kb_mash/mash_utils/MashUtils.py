@@ -22,8 +22,12 @@ class MashUtils:
     def __init__(self, config, auth_token):
         self.scratch = os.path.abspath(config['scratch'])
         self.sw_url = config['srv-wiz-url']
-        self.id_mapper_url = config['id-mapper-url']
+        if config.get('id-mapper-url'):
+            self.id_mapper_url = config['id-mapper-url']
+        else:
+            self.id_mapper_url = config['kbase-endpoint'] + "/idmapper/api/v1"
         self.auth_token = auth_token
+        print(config)
 
     def mash_sketch(self, genome_file_path, paired_ends=False):
         """
@@ -52,10 +56,12 @@ class MashUtils:
         }
 
         sw_resp  = requests.post(url=self.sw_url, data=json.dumps(payload))
-        ahs_resp = sw_resp.json()
-        ahs_url  = ahs_resp['result'][0]['url']
+        sketch_resp = sw_resp.json()
+        if sketch_resp.get('error'):
+            raise RuntimeError("ServiceWizard Error: " + sketch_resp['error'])
+        sketch_url  = sketch_resp['result'][0]['url']
 
-        return ahs_url
+        return sketch_url
 
     def sketch_service_query(self, assembly_upa, n_max_results, search_db):
         '''Query assembly homology service to leverage its caching and mash implementation
@@ -75,8 +81,15 @@ class MashUtils:
         }
         # get current sketch_service url from service wizard
         sketch_url = self.get_sketch_service_url_with_service_wizard()
-        resp = requests.post(url=sketch_url, data=json.dumps(payload),
-                            headers={'content-type':'application/json', 'authorization':self.auth_token})
+        print("-------------------------")
+        print("----------BLOOP----------")
+        print("-------------------------")
+        print("---sketch service url----"+sketch_url+'---')
+        print("-------------------------")
+        print("----------BLOOP----------")
+        print("-------------------------")
+        resp = requests.post(url=sketch_url, data=json.dumps(payload),headers={
+            'content-type':"application/json-rpc",'Authorization':self.auth_token})
 
         return self.parse_results(resp.json())
 
@@ -108,14 +121,15 @@ class MashUtils:
         }
         id_mapper_url = self.id_mapper_url + '/mapping/RefSeq'
 
-        resp = requests.get(url=id_mapper_url, data=json.dumps(payload))# ,headers={'Authorization':self.auth_token})
+        resp = requests.get(url=id_mapper_url, data=json.dumps(payload),\
+                    headers={'content-type':"application/json-rpc",'Authorization':self.auth_token})
         return self.parse_mapper_response(resp.json())
 
     def parse_mapper_response(self, resp):
         """
         """
         if resp.get('error'):
-            raise("ID Mapper Error: "+ resp.get('error', "unknown error"))
+            raise RuntimeError("ID Mapper Error: "+ str(resp.get('error', "unknown error")))
 
         id_to_upa = {}
         namespaces = set([])
