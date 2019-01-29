@@ -29,6 +29,7 @@ class KBObjectUtils:
         self._mkdir_p(self.tmp)
         self.callbackURL = os.environ['SDK_CALLBACK_URL']
         self.ws_url = config['workspace-url']
+        self.dfu = _DFUClient(self.callbackURL)
 
     def _mkdir_p(self, path):
         """
@@ -52,34 +53,38 @@ class KBObjectUtils:
         ws_refs = []
         for x in id_to_upa.values():
             if x != "":
-                ws_refs.append({'ref':x})
+                ws_refs.append(x)
         if len(ws_refs) > 0:
-            ws = _Workspace(self.ws_url)
             # should really catch error and log here, later. Same below for taxa lookup
-            objs = ws.get_objects2({'objects': ws_refs, 'no_data': 1})['data']
+            objs = self.dfu.get_objects({'object_refs': ws_refs})['data']
             upa_to_name = {}
             upa_to_taxon_upa = {}
             for o in objs:
                 upa_ = self._to_upa(o['info'])
                 upa_to_name[upa_] = o['info'][1]
-                upa_to_taxon_upa[upa_] = o['refs'][0]
-            taxrefs = [{'ref': x} for x in upa_to_taxon_upa.values()]
+                # check to see if this object has a taxon_upa
+                if o.get('refs'):
+                    upa_to_taxon_upa[upa_] = o['refs'][0]
+            taxrefs = upa_to_taxon_upa.values()
             # 1) Really should use a reference path here, but since the taxons are public skip
             # 2) The taxon objects should have the scientific name in the metadata so the entire
             #    object doesn't need to be fetched. At least the taxa objects are small.
             # 3) Should use DFU for getting objects
             # 4) This code is a Very Bad Example of how to do things, basically
             upa_to_sci_name = {}
-            taxobjs = ws.get_objects2({'objects': taxrefs})['data']
-            for t in taxobjs:
-                upa = self._to_upa(t['info'])
-                upa_to_sci_name[upa] = t['data']['scientific_name']
+            if len(taxrefs) > 0:
+                taxobjs = self.dfu.get_objects({'object_refs': taxrefs})['data']
+                for t in taxobjs:
+                    upa = self._to_upa(t['info'])
+                    upa_to_sci_name[upa] = t['data']['scientific_name']
             for id_, upa in id_to_upa.items():
                 upa = upa.replace('_','/')
                 if upa != "" and upa_to_name.get(upa) and upa_to_taxon_upa.get(upa):
                     idmap[id_] = {'id': '{} ({})'.format(upa_to_name[upa],
                                         upa_to_sci_name[upa_to_taxon_upa[upa]]),
-                                'link': '/#dataview/' + upa.replace('_', '/')}
+                                'link': '/#dataview/' + upa}
+                elif upa != "" and upa_to_name.get(upa):
+                    idmap[id_] = {'id': '{}'.format(upa_to_name[upa]), 'link':'/#dataview/' + upa}
 
         return idmap
 
@@ -118,9 +123,8 @@ class KBObjectUtils:
 
         log('Saving Mash search report')
 
-        dfu = _DFUClient(self.callbackURL)
         try:
-            dfuout = dfu.file_to_shock({'file_path': outdir, 'make_handle': 0, 'pack': 'zip'})
+            dfuout = self.dfu.file_to_shock({'file_path': outdir, 'make_handle': 0, 'pack': 'zip'})
         except _DFUError as dfue:
             # not really any way to test this block
             log('Logging exception loading results to shock')
