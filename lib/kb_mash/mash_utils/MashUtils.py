@@ -27,7 +27,6 @@ class MashUtils:
         else:
             self.id_mapper_url = config['kbase-endpoint'] + "/idmapper/api/v1"
         self.auth_token = auth_token
-        print(config)
 
     def mash_sketch(self, genome_file_path, paired_ends=False):
         """
@@ -81,13 +80,6 @@ class MashUtils:
         }
         # get current sketch_service url from service wizard
         sketch_url = self.get_sketch_service_url_with_service_wizard()
-        print("-------------------------")
-        print("----------BLOOP----------")
-        print("-------------------------")
-        print("---sketch service url----"+sketch_url+'---')
-        print("-------------------------")
-        print("----------BLOOP----------")
-        print("-------------------------")
         resp = requests.post(url=sketch_url, data=json.dumps(payload),headers={
             'content-type':"application/json-rpc",'Authorization':self.auth_token})
 
@@ -132,17 +124,13 @@ class MashUtils:
             raise RuntimeError("ID Mapper Error: "+ str(resp.get('error', "unknown error")))
 
         id_to_upa = {}
-        namespaces = set([])
         for id_ in resp:
             mappings = resp[id_]["mappings"]
             # default upa is no upa
             id_to_upa[id_] = ""
             for mapping in mappings:
-                namespace = mapping['ns']
-                namespaces.add(namespace)
-                if namespace == "KBase":
+                if mapping['ns'] == "KBase":
                     id_to_upa[id_] = mapping['id']
-        print("available response namespaces in the idmapping service:",namespaces)
         return id_to_upa
 
     def _run_command(self, command):
