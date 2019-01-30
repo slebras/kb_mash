@@ -62,11 +62,10 @@ class kb_mashTest(unittest.TestCase):
             cls.wsClient.delete_workspace({'workspace': cls.wsName})
             print('Test workspace was deleted')
 
-    def get_genome_ref(self, ws_name):
+    def get_genome_ref(self, ws_name, tf='ecoliMG1655.fa'):
         if hasattr(self.__class__, 'genomeInfo'):
             return self.__class__.genomeInfo
         au = AssemblyUtil(os.environ['SDK_CALLBACK_URL'])
-        tf = 'ecoliMG1655.fa'
         target = os.path.join(self.scratch, tf)
         self.genome_path = target
         shutil.copy('data/' + tf, target)
@@ -76,6 +75,7 @@ class kb_mashTest(unittest.TestCase):
             'assembly_name': 'ecoliMG1655'
         })
         return self.__class__.genomeInfo
+
 
     def getWsClient(self):
         return self.__class__.wsClient
@@ -94,6 +94,12 @@ class kb_mashTest(unittest.TestCase):
 
     def getContext(self):
         return self.__class__.ctx
+
+    def test_mash_search_jgi(self):
+        ws_name = self.getWsName()
+        params = {'input_assembly_upa': self.get_genome_ref(ws_name, tf='3300011599_1.fa'), 'workspace_name': ws_name,
+                  'search_db':'JGI_MAGS', 'n_max_results':10}
+        self.getImpl().run_mash_dist_search(self.getContext(), params)
 
     def test_mash_search(self):
         ws_name = self.getWsName()
