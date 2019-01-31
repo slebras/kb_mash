@@ -29,11 +29,11 @@ suggestions:
 # Configure the display and description of parameters
 #
 parameters :
-    input_assembly_upa :
+    input_upa :
         ui-name : |
-            Assembly Name
+            Assembly or Genome
         short-hint : |
-            Assembly Name
+            Assembly Name or Genome Name
     search_db :
         ui-name : |
             Search Database

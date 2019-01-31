@@ -5,7 +5,7 @@ A KBase module: kb_mash
 module kb_mash {
     /*
     params:
-        input_assembly_upa: workspace reference to an assembly object
+        input_upa: workspace reference to an assembly object
         workspace_name: name of current workspace
         search_db: database to search
         n_max_results: number of results to return, integer between 1 and 100
@@ -14,7 +14,7 @@ module kb_mash {
     typedef int boolean;
 
     typedef structure {
-        string input_assembly_upa;
+        string input_upa;
         string workspace_name;
         string search_db;
         int n_max_results;

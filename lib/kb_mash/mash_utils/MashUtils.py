@@ -62,18 +62,18 @@ class MashUtils:
 
         return sketch_url
 
-    def sketch_service_query(self, assembly_upa, n_max_results, search_db):
+    def sketch_service_query(self, input_upa, n_max_results, search_db):
         '''Query assembly homology service to leverage its caching and mash implementation
 
         params:
-            assembly_upa - reference to assembly 
+            input_upa - reference to assembly or genome
             n_max_results - number of results to return
             search_db - string to specify search database
         '''
         payload = {
             "method":"get_homologs",
             "params":{
-                'ws_ref':assembly_upa,
+                'ws_ref':input_upa,
                 'n_max_results':n_max_results,
                 'search_db': search_db
             }

@@ -23,9 +23,9 @@ class kb_mash:
     # state. A method could easily clobber the state set by another while
     # the latter method is running.
     ######################################### noqa
-    VERSION = "0.0.1"
-    GIT_URL = ""
-    GIT_COMMIT_HASH = "0c70e502b92a6376c9c005f2a36a85e915e2d42b"
+    VERSION = "0.0.2"
+    GIT_URL = "https://github.com/kbaseapps/kb_mash.git"
+    GIT_COMMIT_HASH = "ed944a0524a71cc88dc95fea77a6a1d9d5c0eeac"
 
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
@@ -47,9 +47,9 @@ class kb_mash:
     def run_mash_dist_search(self, ctx, params):
         """
         :param params: instance of type "MashParams" -> structure: parameter
-           "input_assembly_upa" of String, parameter "workspace_name" of
-           String, parameter "search_db" of String, parameter "max_hits" of
-           Long
+           "input_upa" of String, parameter "workspace_name" of
+           String, parameter "search_db" of String, parameter "n_max_results"
+           of Long
         :returns: instance of type "MashResults" -> structure: parameter
            "report_name" of String, parameter "report_ref" of String
         """
@@ -65,14 +65,14 @@ class kb_mash:
             n_max_results = params.get('n_max_results', 10)
         else:
             raise ValueError("n_max_results not present as an argument in params")
-        if params.get('input_assembly_upa'):
-            upa = params.get('input_assembly_upa')
+        if params.get('input_upa'):
+            upa = params.get('input_upa')
         else:
-            raise ValueError("Assembly workspace reference must be specified")
+            raise ValueError("Assembly or Genome workspace reference must be specified")
 
         os.chdir(self.scratch)
         kb_obj_helper = KBObjectUtils(self.config)
-        # [file_list] = kb_obj_helper.stage_assembly_files([params['input_assembly_upa']])
+        # [file_list] = kb_obj_helper.stage_assembly_files([params['input_upa']])
         # print(file_list)
         mash_utils = MashUtils(self.config, self.auth_token)
         id_to_similarity , id_to_upa = mash_utils.sketch_service_query(upa, n_max_results, search_db)
@@ -110,12 +110,15 @@ class kb_mash:
            string - local file path to an input fasta/fastq *   assembly_ref
            - string - workspace reference to an Assembly type *   reads_ref -
            string - workspace reference to a Reads type * Optionally, pass in
-           a boolean indicating whether you are using paired-end reads. *  
+           a boolean indicating whether you are using paired-end reads. *
            paired_ends - boolean - whether you are passing in paired ends) ->
            structure: parameter "input_path" of String, parameter
            "assembly_ref" of String, parameter "reads_ref" of String,
-           parameter "paired_ends" of type "boolean" (Insert your typespec
-           information here.)
+           parameter "paired_ends" of type "boolean" (params:
+           input_upa: workspace reference to an assembly object
+           workspace_name: name of current workspace search_db: database to
+           search n_max_results: number of results to return, integer between
+           1 and 100)
         :returns: instance of type "MashSketchResults" (* * Returns the local
            scratch file path of the generated sketch file. * Will have the
            extension '.msh') -> structure: parameter "sketch_path" of String
