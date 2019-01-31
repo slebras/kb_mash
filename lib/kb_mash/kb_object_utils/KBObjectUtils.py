@@ -139,7 +139,7 @@ class KBObjectUtils:
                                  'name': 'index.html',
                                  'label': 'Mash search results'}
                                 ],
-                 'report_object_name': 'kb_sourmash_report_' + str(uuid.uuid4()),
+                 'report_object_name': 'kb_mash_report_' + str(uuid.uuid4()),
                  'workspace_name': wsname
                  })
         except _RepError as re:
