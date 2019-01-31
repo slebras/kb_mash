@@ -137,7 +137,7 @@ class KBObjectUtils:
                 {'direct_html_link_index': 0,
                  'html_links': [{'shock_id': dfuout['shock_id'],
                                  'name': 'index.html',
-                                 'label': 'Sourmash search results'}
+                                 'label': 'Mash search results'}
                                 ],
                  'report_object_name': 'kb_sourmash_report_' + str(uuid.uuid4()),
                  'workspace_name': wsname
