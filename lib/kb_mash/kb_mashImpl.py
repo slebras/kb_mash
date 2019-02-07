@@ -75,7 +75,7 @@ class kb_mash:
         # [file_list] = kb_obj_helper.stage_assembly_files([params['input_assembly_upa']])
         # print(file_list)
         mash_utils = MashUtils(self.config, self.auth_token)
-        id_to_similarity , id_to_upa = mash_utils.sketch_service_query(upa, n_max_results, search_db)
+        id_to_similarity , id_to_upa, id_to_sciname = mash_utils.sketch_service_query(upa, n_max_results, search_db)
         # get ids that don't have a kbase id in the sketch/homology service
         diff_ids =  list(set(id_to_similarity.keys()) - set(id_to_upa.keys()))
         if search_db == "NCBI_Refseq" and len(diff_ids) > 0:
@@ -89,7 +89,8 @@ class kb_mash:
         report = kb_obj_helper.create_search_report(
             params['workspace_name'],
             id_to_similarity,
-            id_to_upa
+            id_to_upa,
+            id_to_sciname
         )
 
         results = {'report_name': report['name'], 'report_ref': report['ref']}

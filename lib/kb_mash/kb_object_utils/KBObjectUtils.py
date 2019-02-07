@@ -111,7 +111,7 @@ class KBObjectUtils:
             html_file.write('</table>\n')
             html_file.write('</body></html>\n')
 
-    def create_search_report(self, wsname, id_to_similarity, id_to_upa):
+    def create_search_report(self, wsname, id_to_similarity, id_to_upa, id_to_sciname):
 
         outdir = os.path.join(self.tmp, 'search_report')
         self._mkdir_p(outdir)

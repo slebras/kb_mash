@@ -98,12 +98,14 @@ class MashUtils:
             raise ValueError("No Distances in results JSON response")
 
         distances = results_data['result']['distances']
-        id_to_similarity, id_to_upa = {}, {}
+        id_to_similarity, id_to_upa, id_to_sciname = {}, {}, {}
         for d in distances:
             id_to_similarity[d['sourceid']] = float(d['dist'])
+            if d.get('sciname'):
+                id_to_sciname[d['sourceid']] = d['sciname']
             if d.get('kbase_id'):
                 id_to_upa[d['sourceid']] = d['kbase_id']
-        return id_to_similarity, id_to_upa
+        return id_to_similarity, id_to_upa, id_to_sciname
 
     def id_mapping_query(self, ids):
         """
