@@ -97,13 +97,13 @@ class kb_mashTest(unittest.TestCase):
 
     def test_mash_search_jgi(self):
         ws_name = self.getWsName()
-        params = {'input_assembly_upa': self.get_genome_ref(ws_name, tf='3300011599_1.fa'), 'workspace_name': ws_name,
+        params = {'input_upa': self.get_genome_ref(ws_name, tf='3300011599_1.fa'), 'workspace_name': ws_name,
                   'search_db':'JGI_MAGS', 'n_max_results':10}
         self.getImpl().run_mash_dist_search(self.getContext(), params)
 
     def test_mash_search(self):
         ws_name = self.getWsName()
-        params = {'input_assembly_upa': self.get_genome_ref(ws_name), 'workspace_name': ws_name,
+        params = {'input_upa': self.get_genome_ref(ws_name), 'workspace_name': ws_name,
                   'search_db':'NCBI_Refseq', 'n_max_results':10}
         self.getImpl().run_mash_dist_search(self.getContext(), params)
 

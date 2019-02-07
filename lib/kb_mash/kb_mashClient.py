@@ -12,7 +12,7 @@ from __future__ import print_function
 try:
     # baseclient and this client are in a package
     from .baseclient import BaseClient as _BaseClient  # @UnusedImport
-except:
+except ImportError:
     # no they aren't
     from baseclient import BaseClient as _BaseClient  # @Reimport
 
@@ -23,7 +23,7 @@ class kb_mash(object):
             self, url=None, timeout=30 * 60, user_id=None,
             password=None, token=None, ignore_authrc=False,
             trust_all_ssl_certificates=False,
-            auth_svc='https://kbase.us/services/authorization/Sessions/Login'):
+            auth_svc='https://ci.kbase.us/services/auth/api/legacy/KBase/Sessions/Login'):
         if url is None:
             raise ValueError('A url is required')
         self._service_ver = None
@@ -37,14 +37,13 @@ class kb_mash(object):
         """
         :param params: instance of type "MashParams" -> structure: parameter
            "input_assembly_upa" of String, parameter "workspace_name" of
-           String, parameter "search_db" of String, parameter "max_hits" of
-           Long
+           String, parameter "search_db" of String, parameter "n_max_results"
+           of Long
         :returns: instance of type "MashResults" -> structure: parameter
            "report_name" of String, parameter "report_ref" of String
         """
-        return self._client.call_method(
-            'kb_mash.run_mash_dist_search',
-            [params], self._service_ver, context)
+        return self._client.call_method('kb_mash.run_mash_dist_search',
+                                        [params], self._service_ver, context)
 
     def run_mash_sketch(self, params, context=None):
         """
@@ -58,15 +57,17 @@ class kb_mash(object):
            paired_ends - boolean - whether you are passing in paired ends) ->
            structure: parameter "input_path" of String, parameter
            "assembly_ref" of String, parameter "reads_ref" of String,
-           parameter "paired_ends" of type "boolean" (Insert your typespec
-           information here.)
+           parameter "paired_ends" of type "boolean" (params:
+           input_assembly_upa: workspace reference to an assembly object
+           workspace_name: name of current workspace search_db: database to
+           search n_max_results: number of results to return, integer between
+           1 and 100)
         :returns: instance of type "MashSketchResults" (* * Returns the local
            scratch file path of the generated sketch file. * Will have the
            extension '.msh') -> structure: parameter "sketch_path" of String
         """
-        return self._client.call_method(
-            'kb_mash.run_mash_sketch',
-            [params], self._service_ver, context)
+        return self._client.call_method('kb_mash.run_mash_sketch',
+                                        [params], self._service_ver, context)
 
     def status(self, context=None):
         return self._client.call_method('kb_mash.status',
