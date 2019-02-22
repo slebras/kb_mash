@@ -118,7 +118,6 @@ class MashUtils:
                 sciname += d['sciname']
             if d.get('kbase_id'):
                 curr['item_link'] = self.endpoint +  "/#dataview/" + d['kbase_id']
-            else:
             if d.get('strain'):
                 sciname = sciname + " " + d['strain']
             curr['sciname'] = sciname
