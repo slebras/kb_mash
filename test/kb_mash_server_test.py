@@ -17,7 +17,7 @@ from kb_mash.kb_mashImpl import kb_mash
 from kb_mash.kb_mashServer import MethodContext
 from kb_mash.authclient import KBaseAuth as _KBaseAuth
 from AssemblyUtil.AssemblyUtilClient import AssemblyUtil
-
+from DataFileUtil.DataFileUtilClient import DataFileUtil
 
 class kb_mashTest(unittest.TestCase):
 
@@ -72,10 +72,32 @@ class kb_mashTest(unittest.TestCase):
         self.__class__.genomeInfo = au.save_assembly_from_fasta({
             'file': {'path': target},
             'workspace_name': ws_name,
-            'assembly_name': 'ecoliMG1655'
+            'assembly_name': tf.split('.fa')[0]
         })
         return self.__class__.genomeInfo
 
+    # def get_genome_set_ref(self, ws_name, genome_refs):
+    #     items = []
+    #     for ref in genome_refs:
+    #         item = {
+    #             "ws_genome_id": ref,
+    #             "label":""}
+    #         items.append(item)
+
+    #     genome_set = {
+    #         "description": "",
+    #         "items":items
+    #     }
+    #     dfu  = DataFileUtil(self.__class__.callback_url)
+    #     info = dfu.save_objects({
+    #         "objects": [{
+    #             "data":genome_set,
+    #             "type":"KBaseSets.GenomeSet"
+    #         }],
+    #         "id": self.__class__.wsId
+    #     })[0]
+    #     gs_ref = '/'.join([str(info[6]),str(info[0]),str(info[4])])
+    #     return gs_ref
 
     def getWsClient(self):
         return self.__class__.wsClient
@@ -85,8 +107,12 @@ class kb_mashTest(unittest.TestCase):
             return self.__class__.wsName
         suffix = int(time.time() * 1000)
         wsName = "test_kb_mash_" + str(suffix)
-        ret = self.getWsClient().create_workspace({'workspace': wsName})  # noqa
+        ret = self.getWsClient().create_workspace({'workspace': wsName})# noqa
         self.__class__.wsName = wsName
+        # print('-'*80)
+        # print(ret)
+        # print('-'*80)
+        self.__class__.wsId = ret[0]
         return wsName
 
     def getImpl(self):
@@ -94,6 +120,15 @@ class kb_mashTest(unittest.TestCase):
 
     def getContext(self):
         return self.__class__.ctx
+
+    def test_mash_search_genome_set(self):
+        ws_name = self.getWsName()
+        # genome_refs = ['38012/42/1','38012/38/1','38012/33/1','38012/36/2']
+
+        params = {'input_upa': "38012/45/1", 'workspace_name': ws_name,
+                 'search_db': "NCBI_Refseq", 'n_max_results': 10}
+        self.getImpl().run_mash_dist_search(self.getContext(), params)
+
 
     def test_mash_search_jgi(self):
         ws_name = self.getWsName()
