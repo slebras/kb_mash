@@ -27,7 +27,10 @@ class MashUtils:
         else:
             self.id_mapper_url = config['kbase-endpoint'] + "/idmapper/api/v1"
         self.auth_token = auth_token
-        self.endpoint = config['kbase-endpoint']
+        endpoint = config['kbase-endpoint'].split('/services')[0]
+        if 'appdev' in endpoint:
+            endpoint = endpoint.replace("appdev", "narrative")
+        self.endpoint = endpoint
 
     def mash_sketch(self, genome_file_path, paired_ends=False):
         """
