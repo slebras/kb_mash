@@ -24,7 +24,7 @@
 	            {% for item in results %}
 	            <tr>
 	            	<td>{{item.input_name}}</td>
-	                <td><a href="{{ '%s'%item.item_link }}">{{item.Id}}</a></td>
+	                <td><a {% if item.item_link %}href="{{ '%s'%item.item_link }}" target="_blank" {% endif %}>{{item.Id}}</a></td>
 	                <td class="sorting_1">{{item.dist}}</td>
 	                <td>{{item.sciname}}</td>
 	            </tr>

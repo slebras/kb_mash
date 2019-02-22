@@ -82,7 +82,7 @@ class kb_mash:
         query_results = mash_utils.sketch_service_query(input_upas, n_max_results, search_db)
 
         multi=True
-        if len(query_results) == 1:
+        if len(inputs_upas) == 1:
             multi=False
         report = kb_obj_helper.create_search_report(
             params['workspace_name'],

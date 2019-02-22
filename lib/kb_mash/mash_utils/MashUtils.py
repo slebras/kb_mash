@@ -27,6 +27,7 @@ class MashUtils:
         else:
             self.id_mapper_url = config['kbase-endpoint'] + "/idmapper/api/v1"
         self.auth_token = auth_token
+        self.endpoint = config['kbase-endpoint']
 
     def mash_sketch(self, genome_file_path, paired_ends=False):
         """
@@ -116,9 +117,8 @@ class MashUtils:
             if d.get('sciname'):
                 sciname += d['sciname']
             if d.get('kbase_id'):
-                curr['item_link'] = "/#dataview/" + d['kbase_id']
+                curr['item_link'] = self.endpoint +  "/#dataview/" + d['kbase_id']
             else:
-                curr['item_link'] = ""
             if d.get('strain'):
                 sciname = sciname + " " + d['strain']
             curr['sciname'] = sciname
