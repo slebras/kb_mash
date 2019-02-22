@@ -62,7 +62,7 @@ class MashUtils:
 
         return sketch_url
 
-    def sketch_service_query(self, input_upa, n_max_results, search_db):
+    def sketch_service_query(self, input_upas, n_max_results, search_db):
         '''Query assembly homology service to leverage its caching and mash implementation
 
         params:
@@ -70,22 +70,31 @@ class MashUtils:
             n_max_results - number of results to return
             search_db - string to specify search database
         '''
-        payload = {
-            "method":"get_homologs",
-            "params":{
-                'ws_ref':input_upa,
-                'n_max_results':n_max_results,
-                'search_db': search_db
-            }
-        }
         # get current sketch_service url from service wizard
         sketch_url = self.get_sketch_service_url_with_service_wizard()
-        resp = requests.post(url=sketch_url, data=json.dumps(payload),headers={
-            'content-type':"application/json-rpc",'Authorization':self.auth_token})
+        results = []
+        for upa in input_upas:
+            payload = {
+                "method":"get_homologs",
+                "params":{
+                    'ws_ref':upa,
+                    'n_max_results':n_max_results,
+                    'search_db': search_db
+                }
+            }
 
-        return self.parse_results(resp.json())
+            resp = requests.post(url=sketch_url, data=json.dumps(payload),headers={
+                'content-type':"application/json-rpc",'Authorization':self.auth_token})
 
-    def parse_results(self, results_data):
+            if len(input_upas) == 1:
+                results = self.parse_results(resp.json())
+            else:
+                curr = self.parse_results(resp.json(), input_name=upa)
+                results += curr
+
+        return results
+
+    def parse_results(self, results_data, input_name=None):
         '''
         params:
             results_data: dictionary response from sketch_service
@@ -97,13 +106,35 @@ class MashUtils:
         if not results_data['result'].get('distances'):
             raise ValueError("No Distances in results JSON response")
 
+        results = []
         distances = results_data['result']['distances']
-        id_to_similarity, id_to_upa = {}, {}
+        # id_to_similarity, id_to_upa, id_to_sciname, id_to_strain = {}, {}, {}, {}
         for d in distances:
-            id_to_similarity[d['sourceid']] = float(d['dist'])
+            curr = {}
+            curr['Id'] = d['sourceid']
+            sciname = ""
+            if d.get('sciname'):
+                sciname += d['sciname']
             if d.get('kbase_id'):
-                id_to_upa[d['sourceid']] = d['kbase_id']
-        return id_to_similarity, id_to_upa
+                curr['item_link'] = "/#dataview/" + d['kbase_id']
+            else:
+                curr['item_link'] = ""
+            if d.get('strain'):
+                sciname = sciname + " " + d['strain']
+            curr['sciname'] = sciname
+            curr['dist'] = float(d['dist'])
+            if input_name != None:
+                curr['input_name'] = input_name
+            results.append(curr)
+            # id_to_similarity[d['sourceid']] = float(d['dist'])
+            # if d.get('sciname'):
+            #     id_to_sciname[d['sourceid']] = d['sciname']
+            # if d.get('kbase_id'):
+            #     id_to_upa[d['sourceid']] = d['kbase_id']
+            # if d.get('strain'):
+            #     id_to_strain[d['sourceid']] = d['strain']
+
+        return results
 
     def id_mapping_query(self, ids):
         """

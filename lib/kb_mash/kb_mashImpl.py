@@ -72,25 +72,55 @@ class kb_mash:
 
         os.chdir(self.scratch)
         kb_obj_helper = KBObjectUtils(self.config)
+
+        input_upas = kb_obj_helper.input_upa_parse(upa)
+
         # [file_list] = kb_obj_helper.stage_assembly_files([params['input_upa']])
         # print(file_list)
         mash_utils = MashUtils(self.config, self.auth_token)
-        id_to_similarity , id_to_upa = mash_utils.sketch_service_query(upa, n_max_results, search_db)
-        # get ids that don't have a kbase id in the sketch/homology service
-        diff_ids =  list(set(id_to_similarity.keys()) - set(id_to_upa.keys()))
-        if search_db == "NCBI_Refseq" and len(diff_ids) > 0:
-            query_id_to_upa = mash_utils.id_mapping_query(diff_ids)
-            for key in query_id_to_upa:
-                id_to_upa[key] = query_id_to_upa[key]
-        else:
-            for key in diff_ids:
-                id_to_upa[key] = ""
 
+        query_results = mash_utils.sketch_service_query(input_upas, n_max_results, search_db)
+
+        multi=True
+        if len(query_results) == 1:
+            multi=False
         report = kb_obj_helper.create_search_report(
             params['workspace_name'],
-            id_to_similarity,
-            id_to_upa
+            query_results,
+            multi
         )
+
+        # for upa in query_results:
+        #     id_to_similarity, id_to_upa, id_to_sciname, id_to_strain = query_results[upa]
+
+        #     diff_ids =  list(set(id_to_similarity.keys()) - set(id_to_upa.keys()))
+        #     if search_db == "NCBI_Refseq" and len(diff_ids) > 0:
+        #         query_id_to_upa = mash_utils.id_mapping_query(diff_ids)
+        #         for key in query_id_to_upa:
+        #             id_to_upa[key] = query_id_to_upa[key]
+        #     else:
+        #         for key in diff_ids:
+        #             id_to_upa[key] = ""
+
+        #     query_results[upa] = (id_to_similarity, id_to_upa, id_to_sciname, id_to_strain)
+
+        # if len(query_results) == 1:
+        #     key = query_results.keys()[0]
+        #     id_to_similarity, id_to_upa, id_to_sciname, id_to_strain = query_results[key]
+            
+        #     report = kb_obj_helper.create_search_report(
+        #         params['workspace_name'],
+        #         id_to_similarity,
+        #         id_to_upa,
+        #         id_to_sciname,
+        #         id_to_strain
+        #     )
+        # else:
+        #     # this is the case we have multiple input upas:
+        #     report = kb_obj_helper.create_search_report_multi(
+        #         params['workspace_name'],
+        #         query_results
+        #     )
 
         results = {'report_name': report['name'], 'report_ref': report['ref']}
         #END run_mash_dist_search
