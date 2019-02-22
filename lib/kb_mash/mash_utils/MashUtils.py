@@ -31,7 +31,7 @@ class MashUtils:
         if 'appdev' in endpoint:
             endpoint = endpoint.replace("appdev", "narrative")
         elif '/kbase' in endpoint:
-            endpoint - endpoint.replace("kbase", "narrative.kbase")
+            endpoint = endpoint.replace("kbase", "narrative.kbase")
         self.endpoint = endpoint
 
     def mash_sketch(self, genome_file_path, paired_ends=False):
