@@ -1,6 +1,10 @@
 # kb_mash release notes
 =========================================
 
+0.0.4
+-----
+* added support for showing strain name for refseq hits
+
 0.0.3
 -----
 * added support for genome object as input
