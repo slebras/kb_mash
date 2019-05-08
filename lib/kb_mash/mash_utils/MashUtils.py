@@ -61,7 +61,7 @@ class MashUtils:
         sw_resp  = requests.post(url=self.sw_url, data=json.dumps(payload))
         sketch_resp = sw_resp.json()
         if sketch_resp.get('error'):
-            raise RuntimeError("ServiceWizard Error: " + sketch_resp['error'])
+            raise RuntimeError(f"ServiceWizard Error: {sketch_resp['error']}")
         sketch_url  = sketch_resp['result'][0]['url']
 
         return sketch_url
@@ -104,7 +104,7 @@ class MashUtils:
             results_data: dictionary response from sketch_service
         '''
         if results_data.get('error'):
-            raise RuntimeError("Sketch_service Error: " + results_data['error'])
+            raise RuntimeError(f"Sketch_service Error: {results_data['error']}")
         if not results_data.get('result'):
             raise ValueError("No results or results empty in JSON response body")
         if not results_data['result'].get('distances'):
