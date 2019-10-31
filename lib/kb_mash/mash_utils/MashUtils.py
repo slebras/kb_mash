@@ -51,8 +51,7 @@ class MashUtils:
         return output_path
 
     def get_sketch_service_url_with_service_wizard(self):
-        '''
-        '''
+        '''Get Sketch Serivce url from the service wizard client.'''
         payload = {
             "method":"ServiceWizard.get_service_status",
             "id":'',
@@ -72,7 +71,7 @@ class MashUtils:
         '''Query assembly homology service to leverage its caching and mash implementation
 
         params:
-            input_upa - reference to assembly or genome
+            input_upas - list of references to assembly or genome
             n_max_results - number of results to return
             search_db - string to specify search database
         '''
