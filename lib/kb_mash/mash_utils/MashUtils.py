@@ -78,7 +78,9 @@ class MashUtils:
         # get current sketch_service url from service wizard
         sketch_url = self.get_sketch_service_url_with_service_wizard()
         results = []
-        for upa in input_upas:
+        for inp in input_upas:
+            upa = inp['upa']
+            input_name = inp['name']
             payload = {
                 "method":"get_homologs",
                 "params":{
@@ -94,12 +96,12 @@ class MashUtils:
             if len(input_upas) == 1:
                 results = self.parse_results(resp.json())
             else:
-                curr = self.parse_results(resp.json(), input_name=upa)
+                curr = self.parse_results(resp.json(), input_name=input_name, input_id=upa)
                 results += curr
 
         return results
 
-    def parse_results(self, results_data, input_name=None):
+    def parse_results(self, results_data, input_name=None, input_id=None):
         '''
         params:
             results_data: dictionary response from sketch_service
@@ -122,21 +124,16 @@ class MashUtils:
                 sciname += d['sciname']
             if d.get('kbase_id'):
                 curr['item_link'] = self.endpoint +  "/#dataview/" + d['kbase_id']
+                curr['kbase_id'] = d['kbase_id']
             if d.get('strain'):
                 sciname = sciname + " " + d['strain']
             curr['sciname'] = sciname
             curr['dist'] = float(d['dist'])
             if input_name != None:
                 curr['input_name'] = input_name
+            if input_id != None:
+                curr['input_id'] = input_id
             results.append(curr)
-            # id_to_similarity[d['sourceid']] = float(d['dist'])
-            # if d.get('sciname'):
-            #     id_to_sciname[d['sourceid']] = d['sciname']
-            # if d.get('kbase_id'):
-            #     id_to_upa[d['sourceid']] = d['kbase_id']
-            # if d.get('strain'):
-            #     id_to_strain[d['sourceid']] = d['strain']
-
         return results
 
     def id_mapping_query(self, ids):

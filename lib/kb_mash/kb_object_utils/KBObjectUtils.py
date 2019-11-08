@@ -34,6 +34,7 @@ class KBObjectUtils:
         self.callbackURL = os.environ['SDK_CALLBACK_URL']
         self.ws_url = config['workspace-url']
         self.dfu = _DFUClient(self.callbackURL)
+        self.ws = _Workspace(self.ws_url)
 
     def _mkdir_p(self, path):
         """
@@ -49,94 +50,45 @@ class KBObjectUtils:
                 pass
             else:
                 raise
+
+    def get_upa_names(self, upas):
+        """"""
+        resp = self.ws.get_objects2({'objects': upas, 'no_data': 1})
+        return [
+            {
+                'name': obj['info'][1],
+                'upa': str('/'.join(
+                    [str(obj['info'][6]), str(obj['info'][0]), str(obj['info'][4])]
+                ))
+            }
+            for obj in resp['data']
+        ]
+
     def input_upa_parse(self, upa):
 
         obj_data = self.dfu.get_objects({"object_refs":[upa]})['data'][0]
         obj_type  = obj_data['info'][2]
+        name = obj_data['info'][1]
         gs_obj = obj_data['data']
-        
+
         if 'KBaseSets.GenomeSet' in obj_type:
-            upas = [gsi['ref'] for gsi in gs_obj['items']]
+            upas = self.get_upa_names([{'ref': gsi['ref']} for gsi in gs_obj['items']])
         elif 'KBaseSearch.GenomeSet' in obj_type:
-            upas = [gse['ref'] for gse in gs_obj['elements'].values()]
+            upas = self.get_upa_names([{'ref': gse['ref']} for gse in gs_obj['elements'].values()])
         elif "KBaseGenomes.ContigSet" in obj_type or "KBaseGenomeAnnotations.Assembly" in obj_type or "KBaseGenomes.Genome" in obj_type:
-            upas = [upa]
+            upas = [{'upa': upa, 'name': name}]
         else:
             raise TypeError("provided input must of type 'KBaseSets.GenomeSet','KBaseSearch.GenomeSet','KBaseGenomes.ContigSet','KBaseGenomeAnnotations.Assembly' or 'KBaseGenomes.Genome' not " +str(obj_type))        
         return upas
 
-    # def _create_link_mapping(self, id_to_upa):
-    #     idmap = {}
-
-    #     log('Looking up object names and scientific names in KBase data stores')
-    #     ws_refs = []
-    #     for x in id_to_upa.values():
-    #         if x != "":
-    #             ws_refs.append(x)
-    #     if len(ws_refs) > 0:
-    #         # should really catch error and log here, later. Same below for taxa lookup
-    #         objs = self.dfu.get_objects({'object_refs': ws_refs})['data']
-    #         upa_to_name = {}
-    #         upa_to_taxon_upa = {}
-    #         for o in objs:
-    #             upa_ = self._to_upa(o['info'])
-    #             upa_to_name[upa_] = o['info'][1]
-    #             # check to see if this object has a taxon_upa
-    #             if o.get('refs'):
-    #                 upa_to_taxon_upa[upa_] = o['refs'][0]
-    #         taxrefs = upa_to_taxon_upa.values()
-    #         # 1) Really should use a reference path here, but since the taxons are public skip
-    #         # 2) The taxon objects should have the scientific name in the metadata so the entire
-    #         #    object doesn't need to be fetched. At least the taxa objects are small.
-    #         # 3) Should use DFU for getting objects
-    #         # 4) This code is a Very Bad Example of how to do things, basically
-    #         upa_to_sci_name = {}
-    #         if len(taxrefs) > 0:
-    #             taxobjs = self.dfu.get_objects({'object_refs': taxrefs})['data']
-    #             for t in taxobjs:
-    #                 upa = self._to_upa(t['info'])
-    #                 upa_to_sci_name[upa] = t['data']['scientific_name']
-    #         for id_, upa in id_to_upa.items():
-    #             upa = upa.replace('_','/')
-    #             if upa != "" and upa_to_name.get(upa) and upa_to_taxon_upa.get(upa):
-    #                 idmap[id_] = {'id': '{} ({})'.format(upa_to_name[upa],
-    #                                     upa_to_sci_name[upa_to_taxon_upa[upa]]),
-    #                             'link': '/#dataview/' + upa}
-    #             elif upa != "" and upa_to_name.get(upa):
-    #                 idmap[id_] = {'id': '{}'.format(upa_to_name[upa]), 'link':'/#dataview/' + upa}
-
-    #     return idmap
-
     def _to_upa(self, objinfo, sep='/'):
         return str(objinfo[6]) + sep + str(objinfo[0]) + sep + str(objinfo[4])
 
-    # def _write_search_results(self, outfile, id_to_similarity, id_to_link, id_to_strain):
-    #     # change to mustache or something later. Or just rewrite this whole thing since this is
-    #     # a demo
-    #     with open(outfile, 'w') as html_file:
-    #         html_file.write('<html><body>\n')
-    #         html_file.write('<div>Showing {} matches</div>\n'
-    #                         .format(len(id_to_similarity)))
-    #         html_file.write('<table>\n')
-    #         html_file.write('<tr><th>ID</th><th>Minhash distance</th></tr>\n')
-    #         for id_, similarity in sorted(
-    #                 id_to_similarity.items(), key=operator.itemgetter(1), reverse=False):
-    #             if id_ in id_to_link:
-    #                 html_file.write(
-    #                     '<tr><td><a href="{}" target="_blank">{}</a></td><td>{}</td>\n'.format(
-    #                         id_to_link[id_]['link'], id_to_link[id_]['id'], similarity))
-    #             else:
-    #                 html_file.write('<tr><td>{}</td><td>{}</td>\n'.format(id_, similarity))
-    #         html_file.write('</table>\n')
-    #         html_file.write('</body></html>\n')
-
-    # def create_search_report(self, wsname, id_to_similarity, id_to_upa, id_to_sciname, id_to_strain):
     def create_search_report(self, wsname, query_results, multi):
 
         outdir = os.path.join(self.tmp, 'search_report')
         self._mkdir_p(outdir)
 
-        # id_to_link = self._create_link_mapping(query_results)
         if multi:
             template = env.get_template("index_multi.html")
         else:
@@ -144,9 +96,6 @@ class KBObjectUtils:
         html_output = template.render(results=query_results)
         with open(os.path.join(outdir,'index.html'), 'w') as f:
             f.write(html_output)
-
-        # self._write_search_results(
-        #     os.path.join(outdir, 'index.html'), id_to_similarity, id_to_link, id_to_strain)
 
         log('Saving Mash search report')
 

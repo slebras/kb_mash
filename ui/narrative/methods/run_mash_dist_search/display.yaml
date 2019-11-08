@@ -31,7 +31,7 @@ suggestions:
 parameters :
     input_upa :
         ui-name : |
-            Assembly or Genome
+            Assembly, Genome, or GenomeSet
         short-hint : |
             Assembly Name or Genome Name
     search_db :

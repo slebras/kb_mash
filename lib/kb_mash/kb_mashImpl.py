@@ -87,40 +87,8 @@ class kb_mash:
         report = kb_obj_helper.create_search_report(
             params['workspace_name'],
             query_results,
-            multi
+            False if len(input_upas) == 1 else True
         )
-
-        # for upa in query_results:
-        #     id_to_similarity, id_to_upa, id_to_sciname, id_to_strain = query_results[upa]
-
-        #     diff_ids =  list(set(id_to_similarity.keys()) - set(id_to_upa.keys()))
-        #     if search_db == "NCBI_Refseq" and len(diff_ids) > 0:
-        #         query_id_to_upa = mash_utils.id_mapping_query(diff_ids)
-        #         for key in query_id_to_upa:
-        #             id_to_upa[key] = query_id_to_upa[key]
-        #     else:
-        #         for key in diff_ids:
-        #             id_to_upa[key] = ""
-
-        #     query_results[upa] = (id_to_similarity, id_to_upa, id_to_sciname, id_to_strain)
-
-        # if len(query_results) == 1:
-        #     key = query_results.keys()[0]
-        #     id_to_similarity, id_to_upa, id_to_sciname, id_to_strain = query_results[key]
-            
-        #     report = kb_obj_helper.create_search_report(
-        #         params['workspace_name'],
-        #         id_to_similarity,
-        #         id_to_upa,
-        #         id_to_sciname,
-        #         id_to_strain
-        #     )
-        # else:
-        #     # this is the case we have multiple input upas:
-        #     report = kb_obj_helper.create_search_report_multi(
-        #         params['workspace_name'],
-        #         query_results
-        #     )
 
         results = {'report_name': report['name'], 'report_ref': report['ref']}
         #END run_mash_dist_search
