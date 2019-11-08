@@ -10,33 +10,36 @@
 
 </head>
 <body>
-	<div>
-	    <table id='stats_table' class='table table-striped table-bordered'>
-	        <thead>
-	            <tr>
-	                <td>ID</td>
-	                <td>Minhash Distance</td>
-	                <td>Scientific Name</td>
-	            </tr>
-	        </thead>
-	        <tbody>
-	            {% for item in results %}
-	            <tr>
-	                <td><a {% if item.item_link %}href="{{ '%s'%item.item_link }}" target="_blank" {% endif %}>{{item.Id}}</a></td>
-	                <td class="sorting_1">{{item.dist}}</td>
-	                <td>{{item.sciname}}</td>
-	            </tr>
-	            {% endfor %}
-	        </tbody>
-	    </table>
-	</div>
+    <div>
+        <table id='stats_table' class='table table-striped table-bordered'>
+            <thead>
+                <tr>
+                    <td>Hit Name</td>
+                    <td>Hit KBase ID</td>
+                    <td>Minhash Distance</td>
+                    <td>Scientific Name</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in results %}
+                <tr>
+                    <td><a {% if item.item_link %}href="{{ '%s'%item.item_link }}" target="_blank" {% endif %}>{{item.Id}}</a></td>
+                    <td>{{item.kbase_id}}</td>
+                    <td class="sorting_1">{{item.dist}}</td>
+                    <td>{{item.sciname}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
     <script>
-    	$(document).ready( function(){
-	    	var table = $('.table').DataTable({
-			    'dom': "<'row'<'col-sm-6'B><'col-sm-6'f>>t<'row'<'col-sm-4'i><'col-sm-8'p>>",
-	            'buttons': ['copy', 'csv', 'print', 'colvis']
-	    	})
-    	});
+        $(document).ready( function(){
+            var table = $('.table').DataTable({
+        'dom': "<'row'<'col-sm-6'B><'col-sm-6'f>>t<'row'<'col-sm-4'i><'col-sm-8'p>>",
+                'buttons': ['copy', 'csv', 'print', 'colvis'],
+                   'columnDefs': [{'visible': false, 'targets': [1], 'className': 'hidden'}]
+            })
+        });
     </script>
 </body>
 </html>
