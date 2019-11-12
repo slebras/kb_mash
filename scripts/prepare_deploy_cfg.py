@@ -1,9 +1,9 @@
-import sys
-import os
+import io
 import os.path
+import sys
+from configparser import ConfigParser
+
 from jinja2 import Template
-from ConfigParser import ConfigParser
-import StringIO
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
@@ -23,9 +23,9 @@ if __name__ == "__main__":
                 "kbase_endpoint = " + kbase_endpoint + "\n" + \
                 "job_service_url = " + kbase_endpoint + "/userandjobstate\n" + \
                 "workspace_url = " + kbase_endpoint + "/ws\n" + \
+                "search_url = " + kbase_endpoint + "/searchapi2/rpc\n" + \
                 "shock_url = " + kbase_endpoint + "/shock-api\n" + \
                 "handle_url = " + kbase_endpoint + "/handle_service\n" + \
-                "id_mapper_url = " + kbase_endpoint + "/idmapper/api/v1\n" + \
                 "srv_wiz_url = " + kbase_endpoint + "/service_wizard\n" + \
                 "njsw_url = " + kbase_endpoint + "/njs_wrapper\n"
         if "AUTH_SERVICE_URL" in os.environ:
@@ -36,7 +36,7 @@ if __name__ == "__main__":
             if key.startswith('KBASE_SECURE_CONFIG_PARAM_'):
                 param_name = key[len('KBASE_SECURE_CONFIG_PARAM_'):]
                 props += param_name + " = " + os.environ.get(key) + "\n"
-        config.readfp(StringIO.StringIO(props))
+        config.readfp(io.StringIO(props))
     else:
         raise ValueError('Neither ' + sys.argv[2] + ' file nor KBASE_ENDPOINT env-variable found')
     props = dict(config.items("global"))

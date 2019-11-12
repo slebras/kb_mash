@@ -1,4 +1,4 @@
-FROM kbase/kbase:sdkbase2.latest
+FROM kbase/sdkbase2:python
 MAINTAINER KBase Developer
 # -----------------------------------------
 # In this section, you can install any system dependencies required
@@ -9,7 +9,9 @@ MAINTAINER KBase Developer
 # RUN apt-get update
 
 RUN pip install --upgrade pip \
-	&& pip install --upgrade jinja2
+	&& pip install --upgrade jinja2 \
+	&& pip uninstall -y requests \
+	&& pip install requests
 
 WORKDIR /kb/module
 RUN curl -LJO  https://github.com/marbl/Mash/releases/download/v2.0/mash-Linux64-v2.0.tar \
