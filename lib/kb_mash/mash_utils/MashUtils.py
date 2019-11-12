@@ -107,7 +107,7 @@ class MashUtils:
             results_data: dictionary response from sketch_service
         '''
         if results_data.get('error'):
-            raise RuntimeError("Sketch_service Error: " + str(results_data['error']))
+            raise RuntimeError("Sketch Service Error: " + str(results_data['error']))
         if not results_data.get('result'):
             raise ValueError("No results or results empty in JSON response body")
         if not results_data['result'].get('distances'):

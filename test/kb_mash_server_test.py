@@ -12,7 +12,7 @@ try:
 except:
     from configparser import ConfigParser  # py3
 
-from biokbase.workspace.client import Workspace as workspaceService
+from Workspace.WorkspaceClient import Workspace as workspaceService
 from kb_mash.kb_mashImpl import kb_mash
 from kb_mash.kb_mashServer import MethodContext
 from kb_mash.authclient import KBaseAuth as _KBaseAuth
@@ -31,14 +31,14 @@ class kb_mashTest(unittest.TestCase):
         for nameval in config.items('kb_mash'):
             cls.cfg[nameval[0]] = nameval[1]
         # Getting username from Auth profile for token
-        authServiceUrl = cls.cfg['auth-service-url']
-        auth_client = _KBaseAuth(authServiceUrl)
-        user_id = auth_client.get_user(token)
+        # authServiceUrl = cls.cfg['auth-service-url']
+        # auth_client = _KBaseAuth(authServiceUrl)
+        # user_id = auth_client.get_user(token)
         # WARNING: don't call any logging methods on the context object,
         # it'll result in a NoneType error
         cls.ctx = MethodContext(None)
         cls.ctx.update({'token': token,
-                        'user_id': user_id,
+                        # 'user_id': user_id,
                         'provenance': [
                             {'service': 'kb_mash',
                              'method': 'please_never_use_it_in_production',
