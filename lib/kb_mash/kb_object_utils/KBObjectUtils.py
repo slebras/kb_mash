@@ -5,13 +5,11 @@ import errno
 import operator
 from jinja2 import Environment, PackageLoader, select_autoescape
 
-from KBaseReport.KBaseReportClient import KBaseReport
-from KBaseReport.baseclient import ServerError as _RepError
-from AssemblyUtil.AssemblyUtilClient import AssemblyUtil
-from AssemblyUtil.baseclient import ServerError as AssemblyUtilError
+from installed_clients.KBaseReportClient import KBaseReport
+from installed_clients.AssemblyUtilClient import AssemblyUtil
 from Workspace.WorkspaceClient import Workspace as _Workspace
-from DataFileUtil.DataFileUtilClient import DataFileUtil as _DFUClient
-from DataFileUtil.baseclient import ServerError as _DFUError
+from installed_clients.DataFileUtilClient import DataFileUtil as _DFUClient
+from installed_clients.baseclient import ServerError
 
 def log(message, prefix_newline=False):
     """
@@ -113,7 +111,7 @@ class KBObjectUtils:
                 'workspace_name': wsname,
                 'report_object_name':'kb_mash_report_' + str(uuid.uuid4())
             })
-        except _RepError as re:
+        except ServerError as re:
             log('Logging exception from creating report object')
             log(str(re))
             # TODO delete shock node
@@ -132,7 +130,7 @@ class KBObjectUtils:
         for assembly_upa in object_list:
             try:
                 filename = auc.get_assembly_as_fasta({'ref': assembly_upa})['path']
-            except AssemblyUtilError as assembly_error:
+            except ServerError as assembly_error:
                 print(str(assembly_error))
                 raise
 

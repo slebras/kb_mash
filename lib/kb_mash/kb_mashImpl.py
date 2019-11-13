@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 #BEGIN_HEADER
 import os
-from AssemblyUtil.AssemblyUtilClient import AssemblyUtil
-from ReadsUtils.ReadsUtilsClient import ReadsUtils
+from installed_clients.AssemblyUtilClient import AssemblyUtil
+from installed_clients.ReadsUtilsClient import ReadsUtils
 from kb_mash.kb_object_utils.KBObjectUtils import KBObjectUtils
 from kb_mash.mash_utils.MashUtils import MashUtils
 #END_HEADER
