@@ -20,6 +20,13 @@ mash_bin = '/kb/module/mash-Linux64-v2.0/mash'
 class MashUtils:
 
     def __init__(self, config, auth_token):
+        print('='*80)
+        print('='*80)
+        print('='*80)
+        print('config --- ', json.dumps(config))
+        print('='*80)
+        print('='*80)
+        print('='*80)
         self.scratch = os.path.abspath(config['scratch'])
         self.sw_url = config.get('srv-wiz-url', config['kbase-endpoint'] + '/service_wizard')
         self.id_mapper_url = config.get('id-mapper-url', config['kbase-endpoint'] + '/idmapper/api/v1')
