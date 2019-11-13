@@ -21,11 +21,8 @@ class MashUtils:
 
     def __init__(self, config, auth_token):
         self.scratch = os.path.abspath(config['scratch'])
-        self.sw_url = config['srv-wiz-url']
-        if config.get('id-mapper-url'):
-            self.id_mapper_url = config['id-mapper-url']
-        else:
-            self.id_mapper_url = config['kbase-endpoint'] + "/idmapper/api/v1"
+        self.sw_url = config.get('srv-wiz-url', config['kbase-endpoint'] + '/service_wizard')
+        self.id_mapper_url = config.get('id-mapper-url', config['kbase-endpoint'] + '/idmapper/api/v1')
         self.auth_token = auth_token
         endpoint = config['kbase-endpoint'].split('/services')[0]
         if 'appdev' in endpoint:

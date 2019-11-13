@@ -4,20 +4,18 @@ import os  # noqa: F401
 import time
 import shutil
 
-from ReadsUtils.ReadsUtilsClient import ReadsUtils
+from installed_clients.ReadsUtilsClient import ReadsUtils
 
 from os import environ
-try:
-    from ConfigParser import ConfigParser  # py2
-except:
-    from configparser import ConfigParser  # py3
+
+from configparser import ConfigParser
 
 from Workspace.WorkspaceClient import Workspace as workspaceService
 from kb_mash.kb_mashImpl import kb_mash
 from kb_mash.kb_mashServer import MethodContext
 from kb_mash.authclient import KBaseAuth as _KBaseAuth
-from AssemblyUtil.AssemblyUtilClient import AssemblyUtil
-from DataFileUtil.DataFileUtilClient import DataFileUtil
+from installed_clients.AssemblyUtilClient import AssemblyUtil
+from installed_clients.DataFileUtilClient import DataFileUtil
 
 class kb_mashTest(unittest.TestCase):
 
