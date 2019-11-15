@@ -49,13 +49,13 @@ class KBObjectUtils:
             else:
                 raise
 
-    def get_upa_names(self, upas):
+    def get_upa_names(self, upas, parent_upa):
         """"""
         resp = self.ws.get_objects2({'objects': upas, 'no_data': 1})
         return [
             {
                 'name': obj['info'][1],
-                'upa': str('/'.join(
+                'upa': parent_upa + ";" + str('/'.join(
                     [str(obj['info'][6]), str(obj['info'][0]), str(obj['info'][4])]
                 ))
             }
@@ -70,13 +70,13 @@ class KBObjectUtils:
         gs_obj = obj_data['data']
 
         if 'KBaseSets.GenomeSet' in obj_type:
-            upas = self.get_upa_names([{'ref': gsi['ref']} for gsi in gs_obj['items']])
+            upas = self.get_upa_names([{'ref': upa + ";" + gsi['ref']} for gsi in gs_obj['items']], upa)
         elif 'KBaseSearch.GenomeSet' in obj_type:
-            upas = self.get_upa_names([{'ref': gse['ref']} for gse in gs_obj['elements'].values()])
+            upas = self.get_upa_names([{'ref': upa + ";" + gse['ref']} for gse in gs_obj['elements'].values()], upa)
         elif "KBaseGenomes.ContigSet" in obj_type or "KBaseGenomeAnnotations.Assembly" in obj_type or "KBaseGenomes.Genome" in obj_type:
             upas = [{'upa': upa, 'name': name}]
         else:
-            raise TypeError("provided input must of type 'KBaseSets.GenomeSet','KBaseSearch.GenomeSet','KBaseGenomes.ContigSet','KBaseGenomeAnnotations.Assembly' or 'KBaseGenomes.Genome' not " +str(obj_type))        
+            raise TypeError("provided input must of type 'KBaseSets.GenomeSet','KBaseSearch.GenomeSet','KBaseGenomes.ContigSet','KBaseGenomeAnnotations.Assembly' or 'KBaseGenomes.Genome' not " +str(obj_type))
         return upas
 
     def _to_upa(self, objinfo, sep='/'):
