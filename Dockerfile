@@ -17,8 +17,6 @@ WORKDIR /kb/module
 RUN curl -LJO  https://github.com/marbl/Mash/releases/download/v2.0/mash-Linux64-v2.0.tar \
     && tar xvf mash-Linux64-v2.0.tar
 
-ENV COMPOSE_HTTP_TIMEOUT=1
-
 # -----------------------------------------
 
 COPY ./ /kb/module
