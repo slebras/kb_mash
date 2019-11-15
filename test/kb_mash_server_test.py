@@ -66,7 +66,8 @@ class kb_mashTest(unittest.TestCase):
         au = AssemblyUtil(os.environ['SDK_CALLBACK_URL'])
         target = os.path.join(self.scratch, tf)
         self.genome_path = target
-        shutil.copy('data/' + tf, target)
+        curr_dir = os.path.dirname(os.path.abspath(__file__))
+        shutil.copy(os.path.join(curr_dir, 'data', tf), target)
         self.__class__.genomeInfo = au.save_assembly_from_fasta({
             'file': {'path': target},
             'workspace_name': ws_name,
@@ -127,6 +128,12 @@ class kb_mashTest(unittest.TestCase):
                  'search_db': "NCBI_Refseq", 'n_max_results': 10}
         self.getImpl().run_mash_dist_search(self.getContext(), params)
 
+    def test_another_genomeset(self):
+        ws_name = self.getWsName()
+        genome_set_ref = "38485/7/3"
+        params = {"input_upa": genome_set_ref, "workspace_name": ws_name,
+                  "search_db": "NCBI_Refseq", "n_max_results": 100}
+        ret = self.getImpl().run_mash_dist_search(self.getContext(), params)
 
     def test_mash_search_jgi(self):
         ws_name = self.getWsName()
