@@ -122,7 +122,7 @@ class BaseClient(object):
         asynchronous jobs run with the run_job method.
     '''
     def __init__(
-            self, url=None, timeout=30 * 60, user_id=None,
+            self, url=None, timeout=600, user_id=None,
             password=None, token=None, ignore_authrc=False,
             trust_all_ssl_certificates=False,
             auth_svc='https://kbase.us/services/auth/api/legacy/KBase/Sessions/Login',
