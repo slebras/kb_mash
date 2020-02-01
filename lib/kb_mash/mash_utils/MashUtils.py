@@ -92,9 +92,10 @@ class MashUtils:
                     'search_db': search_db
                 }
             }
-
+            print("Processing input: %s" % input_name)
             resp = requests.post(url=sketch_url, data=json.dumps(payload),headers={
-                'content-type':"application/json-rpc",'Authorization':self.auth_token})
+                'content-type':"application/json-rpc",'Authorization':self.auth_token},
+                timeout=600)
 
             if len(input_upas) == 1:
                 results = self.parse_results(resp.json())
