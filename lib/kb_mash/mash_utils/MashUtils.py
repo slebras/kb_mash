@@ -5,6 +5,9 @@ import json
 import subprocess
 import csv
 import requests
+import time
+import traceback
+from requests.exceptions import RequestException
 
 
 def log(message, prefix_newline=False):
@@ -13,6 +16,20 @@ def log(message, prefix_newline=False):
     """
     print(('\n' if prefix_newline else '') + '{0:.2f}'.format(time.time()) + ': ' + str(message))
 
+
+def logerr(err):
+    '''
+    Log an exception's traceback, split over several lines.
+    '''
+    s = traceback.format_exc(err).split('\n')  # I asssume there's a better way to do this
+    for l in s:
+        log(l)
+
+
+class SketchException(Exception):
+    '''
+    General exception thrown when trying to complete a genome comparison
+    '''
 
 mash_bin = '/kb/module/mash-Linux64-v2.0/mash'
 # ahs_url  = 'https://homology.kbase.us/namespace/%s/search'
@@ -93,9 +110,42 @@ class MashUtils:
                 }
             }
             print("Processing input: %s" % input_name)
-            resp = requests.post(url=sketch_url, data=json.dumps(payload),headers={
-                'content-type':"application/json-rpc",'Authorization':self.auth_token},
-                timeout=600)
+            attempts = 1
+            max_attempts = 5
+            while True:
+                # there's really no good way to test retries w/o a ton of work
+                start = time.time()
+                try:
+                    resp = requests.post(url=sketch_url, data=json.dumps(payload),headers={
+                        'content-type':"application/json-rpc",'Authorization':self.auth_token},
+                        timeout=600)
+                except RequestException as e:
+                    if attempts > max_attempts:
+                        # dunno if e.args[0] is right, no docs  
+                        # https://requests.readthedocs.io/en/master/api/#exceptions
+                        raise SketchException('Sketch service communications failed: ' +
+                                              str(e.args[0])) from e
+                    log('Sketch service comms failed after ' + str(time.time() - start) + 's')
+                    logerr(e)
+                else:
+                    if not resp.ok:
+                        # could try deserializing from json, YAGNI for now
+                        if attempts > max_attempts:
+                            raise SketchException(
+                                'Recieved bad response from the sketch service: {}\n{}'.format(
+                                    resp.status_code, resp.text))
+                        log('Bad response from Sketch service after ' +
+                            str(time.time() - start) + 's')
+                        log('Error from sketch service: {}\n{}'.format(
+                            resp.status_code, resp.text))
+                    else:
+                        break
+                # possibly multiple runs in succession cause the assembly homology service to
+                # time out per Sebastian LeBras. IIUC this was originally fixed by increasing a
+                # timeout in nginx, but it's occurring again so try an exponential backoff
+                # to let the service CTFO
+                time.sleep(2 ** attempts)
+                attempts += 1
 
             if len(input_upas) == 1:
                 results = self.parse_results(resp.json())
