@@ -21,8 +21,7 @@ def logerr(err):
     '''
     Log an exception's traceback, split over several lines.
     '''
-    s = traceback.format_exc(err).split('\n')  # I asssume there's a better way to do this
-    for l in s:
+    for l in traceback.format_exc(err).split('\n'):  # I asssume there's a better way to do this
         log(l)
 
 
@@ -116,8 +115,13 @@ class MashUtils:
                 # there's really no good way to test retries w/o a ton of work
                 start = time.time()
                 try:
-                    resp = requests.post(url=sketch_url, data=json.dumps(payload),headers={
-                        'content-type':"application/json-rpc",'Authorization':self.auth_token},
+                    resp = requests.post(
+                        url=sketch_url,
+                        data=json.dumps(payload),
+                        headers={
+                            'content-type': 'application/json-rpc',
+                            'Authorization': self.auth_token
+                            },
                         timeout=600)
                 except RequestException as e:
                     if attempts > max_attempts:
