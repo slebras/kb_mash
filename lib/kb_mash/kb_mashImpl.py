@@ -70,10 +70,7 @@ class kb_mash:
         else:
             raise ValueError("Assembly or Genome workspace reference must be specified")
 
-        if params.get('cache'):
-            cache = bool(params['cache'])
-        else:
-            raise ValueError("'cache' argument must be specified")
+        cache = bool(params.get('cache', 1))
 
         os.chdir(self.scratch)
         kb_obj_helper = KBObjectUtils(self.config)
