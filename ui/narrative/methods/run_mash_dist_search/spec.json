@@ -54,6 +54,18 @@
                 "min_int":1,
                 "max_int":500
             }
+        },
+        {
+          "id":"cache",
+          "optional": false,
+          "advanced": true,
+          "allow_multiple": false,
+          "default_values":[ 1 ],
+          "field_type":"checkbox",
+          "checkbox_options": {
+            "unchecked_value" : 0,
+            "checked_value" : 1
+          }
         }
     ],
     "behavior": {

@@ -70,13 +70,14 @@ class MashUtils:
 
         return sketch_url
 
-    def sketch_service_query(self, input_upas, n_max_results, search_db):
+    def sketch_service_query(self, input_upas, n_max_results, search_db, cache):
         '''Query assembly homology service to leverage its caching and mash implementation
 
         params:
             input_upas - list of references to assembly or genome
             n_max_results - number of results to return
             search_db - string to specify search database
+            cache - boolean of whether to use cache or not.
         '''
         # get current sketch_service url from service wizard
         sketch_url = self.get_sketch_service_url_with_service_wizard()
@@ -89,12 +90,19 @@ class MashUtils:
                 "params":{
                     'ws_ref':upa,
                     'n_max_results':n_max_results,
-                    'search_db': search_db
+                    'search_db': search_db,
+                    'bypass_caching': not cache
                 }
             }
 
-            resp = requests.post(url=sketch_url, data=json.dumps(payload),headers={
-                'content-type':"application/json-rpc",'Authorization':self.auth_token})
+            resp = requests.post(
+                url=sketch_url,
+                data=json.dumps(payload),
+                headers={
+                    'content-type': "application/json-rpc",
+                    'Authorization':self.auth_token
+                }
+            )
 
             if len(input_upas) == 1:
                 results = self.parse_results(resp.json())

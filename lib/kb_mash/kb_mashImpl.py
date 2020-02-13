@@ -70,6 +70,11 @@ class kb_mash:
         else:
             raise ValueError("Assembly or Genome workspace reference must be specified")
 
+        if params.get('cache'):
+            cache = bool(params['cache'])
+        else:
+            raise ValueError("'cache' argument must be specified")
+
         os.chdir(self.scratch)
         kb_obj_helper = KBObjectUtils(self.config)
 
@@ -79,7 +84,7 @@ class kb_mash:
         # print(file_list)
         mash_utils = MashUtils(self.config, self.auth_token)
 
-        query_results = mash_utils.sketch_service_query(input_upas, n_max_results, search_db)
+        query_results = mash_utils.sketch_service_query(input_upas, n_max_results, search_db, cache)
 
         report = kb_obj_helper.create_search_report(
             params['workspace_name'],

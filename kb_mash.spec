@@ -9,6 +9,7 @@ module kb_mash {
         workspace_name: name of current workspace
         search_db: database to search
         n_max_results: number of results to return, integer between 1 and 100
+        cache: boolean of whether to use the cached results.
     */
 
     typedef int boolean;
@@ -18,6 +19,7 @@ module kb_mash {
         string workspace_name;
         string search_db;
         int n_max_results;
+        int cache;
     } MashParams;
 
     typedef structure {
